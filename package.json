@@ -1,0 +1,35 @@
+{
+  "name": "socket.io-chat",
+  "version": "1.0.0",
+  "description": "Proyecto de Node.js con Express, Socket.IO y TypeScript usando módulos ES",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write .",
+    "dev": "nodemon --watch src --exec ts-node src/index.ts",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.6.2",
+  "dependencies": {
+    "express": "^5.1.0",
+    "socket.io": "^4.8.1",
+    "socket.io-chat": "file:"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.14.1",
+    "@typescript-eslint/eslint-plugin": "^8.30.1",
+    "@typescript-eslint/parser": "^8.30.1",
+    "eslint": "^9.24.0",
+    "eslint-config-prettier": "^10.1.2",
+    "eslint-plugin-prettier": "^5.2.6",
+    "nodemon": "^3.1.9",
+    "prettier": "^3.5.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
