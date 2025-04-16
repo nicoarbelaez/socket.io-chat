@@ -2,8 +2,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const messagesContainer = document.getElementById('messagesContainer');
   const messageInput = document.getElementById('messageInput');
   const sendButton = document.getElementById('sendButton');
+  const scrollToBottomButton = document.getElementById('scrollToBottom');
+  let isAutoScrollEnabled = true;
 
-  // Función para añadir mensajes
+  const scrollToBottom = () => {
+    messagesContainer.scrollTo({
+      top: messagesContainer.scrollHeight,
+      behavior: 'smooth',
+    });
+  };
+
+  messagesContainer.addEventListener('scroll', () => {
+    const threshold = 100;
+    const fromBottom =
+      messagesContainer.scrollHeight -
+      messagesContainer.scrollTop -
+      messagesContainer.clientHeight;
+
+    isAutoScrollEnabled = fromBottom <= threshold;
+    scrollToBottomButton.classList.toggle('visible', !isAutoScrollEnabled);
+  });
+
+  scrollToBottomButton.addEventListener('click', scrollToBottom);
+
   function addMessage(text, isSent) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${isSent ? 'sent' : 'received'}`;
@@ -19,10 +40,12 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
 
     messagesContainer.appendChild(messageDiv);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    if (isAutoScrollEnabled) {
+      scrollToBottom();
+    }
   }
 
-  // Manejar envío de mensajes
   sendButton.addEventListener('click', () => {
     const message = messageInput.value.trim();
     if (message) {
@@ -40,4 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setTimeout(() => {
     addMessage('Sí, estaré ahí a las 3pm 👍', false);
   }, 1000);
+
+  // Scroll inicial al cargar
+  setTimeout(scrollToBottom, 100);
 });

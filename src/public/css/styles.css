@@ -9,6 +9,7 @@
     --text-color: #111b21;
     --timestamp-color: #667781;
     --button-hover: #054d44;
+    --scroll-button-size: 40px;
 }
 
 body {
@@ -30,8 +31,8 @@ body {
     flex-direction: column;
     width: 100%;
     background-color: var(--received-message-bg);
-    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
-    border-radius: 8px;
+    box-shadow: 0 20px 20px rgba(0,0,0,0.3);
+    border-radius: 15px;
     overflow: hidden;
 }
 
@@ -42,6 +43,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    scroll-behavior: smooth;
 }
 
 .message {
@@ -61,6 +63,12 @@ body {
     background-color: var(--received-message-bg);
     align-self: flex-start;
     border: 1px solid var(--message-border);
+}
+
+.message .text {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
 }
 
 .message .timestamp {
@@ -104,4 +112,33 @@ h1 {
     margin: 20px 0;
     color: var(--primary-color);
     text-align: center;
+}
+
+.scroll-to-bottom {
+    position: fixed;
+    right: calc(50% - 400px + 20px);
+    bottom: 80px;
+    width: var(--scroll-button-size);
+    height: var(--scroll-button-size);
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: none;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.scroll-to-bottom.visible {
+    display: block;
+    opacity: 0.9;
+    transform: translateY(0);
+}
+
+.scroll-to-bottom:hover {
+    opacity: 1;
+    background-color: var(--secondary-color);
 }
