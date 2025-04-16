@@ -1,0 +1,107 @@
+:root {
+    --primary-color: #075e54;
+    --secondary-color: #128c7e;
+    --background-color: #ece5dd;
+    --sent-message-bg: #dcf8c6;
+    --received-message-bg: #ffffff;
+    --message-border: #eeeeee;
+    --input-background: #f0f0f0;
+    --text-color: #111b21;
+    --timestamp-color: #667781;
+    --button-hover: #054d44;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    background-color: var(--background-color);
+    display: flex;
+    flex-direction: column;
+    color: var(--text-color);
+}
+
+.chat-container {
+    max-width: 800px;
+    margin: 20px auto;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: var(--received-message-bg);
+    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.messages-container {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.message {
+    max-width: 70%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin: 4px 0;
+    position: relative;
+}
+
+.message.sent {
+    background-color: var(--sent-message-bg);
+    align-self: flex-end;
+}
+
+.message.received {
+    background-color: var(--received-message-bg);
+    align-self: flex-start;
+    border: 1px solid var(--message-border);
+}
+
+.message .timestamp {
+    font-size: 0.75rem;
+    color: var(--timestamp-color);
+    margin-top: 4px;
+    text-align: right;
+}
+
+.input-container {
+    padding: 15px 20px;
+    background-color: var(--input-background);
+    display: flex;
+    gap: 10px;
+}
+
+.message-input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid var(--message-border);
+    border-radius: 20px;
+    outline: none;
+    background-color: var(--received-message-bg);
+}
+
+.send-button {
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.send-button:hover {
+    background-color: var(--button-hover);
+}
+
+h1 {
+    margin: 20px 0;
+    color: var(--primary-color);
+    text-align: center;
+}
