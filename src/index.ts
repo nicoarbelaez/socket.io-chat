@@ -35,12 +35,13 @@ const configureStaticAssets = () => {
 };
 
 io.on('connection', (socket) => {
+  socket.emit('new_message', 'never');
   console.log(
     `+ (${io.engine.clientsCount}) Nuevo cliente conectado ${socket.id}`
   );
 
-  socket.on('hello', () => {
-    console.log("Evento 'hello' recibido desde el cliente");
+  socket.on('send_message', (message, socketId) => {
+    console.log(message, socketId);
   });
 
   socket.on('disconnect', () => {
