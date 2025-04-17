@@ -24,18 +24,19 @@ const handleScroll = () => {
   scrollToBottomButton.classList.toggle('visible', !isAutoScrollEnabled);
 };
 
-const addMessage = (text, isSent) => {
+const addMessage = ({ text, name, timestamp, isSent }) => {
   const messageDiv = document.createElement('div');
   messageDiv.className = `message ${isSent ? 'sent' : 'received'}`;
 
-  const timestamp = new Date().toLocaleTimeString([], {
+  const date = new Date(timestamp);
+  const formattedTime = date.toLocaleTimeString([], {
     hour: '2-digit',
     minute: '2-digit',
   });
 
   messageDiv.innerHTML = `
     <div class="text">${text}</div>
-    <div class="timestamp">${timestamp} - ${isSent ? 'Yo' : 'Usuario'}</div>
+    <div class="timestamp">${formattedTime} - ${isSent ? 'Yo' : name}</div>
   `;
 
   messagesContainer.appendChild(messageDiv);
@@ -53,8 +54,9 @@ messagesContainer.addEventListener('scroll', handleScroll);
 sendButton.addEventListener('click', () => {
   const message = messageInput.value.trim();
   if (message) {
-    socket.emit('send_message', message, socket.id); // Envía mensaje al servidor
-    addMessage(message, true);
+    const timestamp = Date.now();
+    socket.emit('send_message', message, socket.id, timestamp); // Envía mensaje al servidor
+    addMessage({ text: message, timestamp, isSent: true });
     messageInput.value = '';
   }
 });
@@ -65,16 +67,21 @@ socket.on('connect', () => {
   scrollToBottom();
 });
 
-socket.on('new_message', (message, socketid) => {
-  console.log({ socketid });
-  addMessage(message, false);
+socket.on('new_message', ({ message, id, timestamp, name }) => {
+  const isSent = id == socket.id;
+  if (isSent) {
+    return;
+  }
+  addMessage({ text: message, name, timestamp, isSent });
+});
+
+socket.on('conversation', (messages) => {
+  messages.forEach(({ message, id, timestamp, name }) => {
+    const isSent = id == socket.id;
+    addMessage({ text: message, name, timestamp, isSent });
+  });
 });
 
 socket.on('connect_error', (err) => {
   console.error('Error de conexión:', err.message);
 });
-
-// Mensaje de prueba inicial
-setTimeout(() => {
-  addMessage('Sí, estaré ahí a las 3pm 👍', false);
-}, 1000);
