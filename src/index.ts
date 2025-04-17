@@ -10,6 +10,8 @@ import {
 } from './types/socket';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { addMessage, messages } from './utils/message.js';
+import { addSocketOnline } from './utils/socket.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -35,13 +37,22 @@ const configureStaticAssets = () => {
 };
 
 io.on('connection', (socket) => {
-  socket.emit('new_message', 'never');
+  addSocketOnline(socket.id);
+  io.to(socket.id).emit('conversation', messages);
+
   console.log(
     `+ (${io.engine.clientsCount}) Nuevo cliente conectado ${socket.id}`
   );
 
-  socket.on('send_message', (message, socketId) => {
-    console.log(message, socketId);
+  socket.on('send_message', (message, socketId, timestamp) => {
+    const completeData = {
+      message,
+      id: socketId,
+      timestamp: timestamp ? timestamp : Date.now(),
+      name: 'User',
+    };
+    io.emit('new_message', completeData);
+    addMessage(completeData);
   });
 
   socket.on('disconnect', () => {
