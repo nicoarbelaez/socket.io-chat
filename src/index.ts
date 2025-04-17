@@ -51,7 +51,7 @@ io.on('connection', (socket) => {
       timestamp: timestamp ? timestamp : Date.now(),
       name: 'User',
     };
-    io.emit('new_message', completeData);
+    socket.broadcast.emit('new_message', completeData);
     addMessage(completeData);
   });
 
@@ -59,6 +59,10 @@ io.on('connection', (socket) => {
     console.log(
       `- (${io.engine.clientsCount}) Cliente desconectado ${socket.id}`
     );
+  });
+
+  socket.on('circle_position', (position) => {
+    socket.broadcast.emit('circle_move', position);
   });
 });
 
