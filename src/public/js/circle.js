@@ -1,7 +1,10 @@
 const $circle = document.querySelector('#circle');
 
 const drag = (e) => {
-  const position = { top: e.clientY + 'px', left: e.clientX + 'px' };
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+  const position = { top: clientY + 'px', left: clientX + 'px' };
 
   setPosition(position);
   socket.emit('circle_position', position);
@@ -17,9 +20,17 @@ $circle.addEventListener('mousedown', (e) => {
   document.addEventListener('mousemove', drag);
 });
 
-document.addEventListener('mouseup', (e) => {
-  e.set;
+document.addEventListener('mouseup', () => {
   document.removeEventListener('mousemove', drag);
+});
+
+$circle.addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  document.addEventListener('touchmove', drag, { passive: false });
+});
+
+document.addEventListener('touchend', () => {
+  document.removeEventListener('touchmove', drag);
 });
 
 socket.on('circle_move', (position) => {
