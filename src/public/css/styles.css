@@ -1,166 +1,256 @@
 :root {
-    --primary-color: #075e54;
-    --secondary-color: #128c7e;
-    --background-color: #ece5dd;
-    --sent-message-bg: #dcf8c6;
-    --received-message-bg: #ffffff;
-    --message-border: #eeeeee;
-    --input-background: #f0f0f0;
-    --text-color: #111b21;
-    --timestamp-color: #667781;
-    --button-hover: #054d44;
-    --scroll-button-size: 40px;
+  --primary-color: #075e54;
+  --secondary-color: #128c7e;
+  --background-color: #ece5dd;
+  --background-container-color: #c9dac9;
+  --sent-message-bg: #dcf8c6;
+  --received-message-bg: #ffffff;
+  --message-border: #eeeeee;
+  --input-background: #f0f0f0;
+  --text-color: #111b21;
+  --timestamp-color: #667781;
+  --button-hover: #054d44;
+  --scroll-button-size: 40px;
 }
 
 body {
-    font-family: 'Arial', sans-serif;
-    margin: 0;
-    padding: 0;
-    height: 100vh;
-    background-color: var(--background-color);
-    display: flex;
-    flex-direction: column;
-    color: var(--text-color);
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  background-color: var(--background-color);
+  display: flex;
+  flex-direction: column;
+  color: var(--text-color);
 }
 
 .chat-container {
-    max-width: 800px;
-    margin: 20px auto;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    background-color: var(--received-message-bg);
-    box-shadow: 0 20px 20px rgba(0,0,0,0.3);
-    border-radius: 15px;
-    overflow: hidden;
+  margin-top: 60px;
+  height: calc(100vh - 120px);
+  max-width: 800px;
+  margin: 20px auto;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: var(--received-message-bg);
+  box-shadow: 0 20px 20px rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+  overflow: hidden;
 }
 
 .messages-container {
-    flex-grow: 1;
-    padding: 20px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    scroll-behavior: smooth;
+  background-color: var(--background-container-color);
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scroll-behavior: smooth;
 }
 
 .message {
-    max-width: 70%;
-    padding: 8px 12px;
-    border-radius: 8px;
-    margin: 4px 0;
-    position: relative;
+  max-width: 70%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin: 4px 0;
+  position: relative;
 }
 
 .message.sent {
-    background-color: var(--sent-message-bg);
-    align-self: flex-end;
+  background-color: var(--sent-message-bg);
+  align-self: flex-end;
 }
 
 .message.received {
-    background-color: var(--received-message-bg);
-    align-self: flex-start;
-    border: 1px solid var(--message-border);
+  background-color: var(--received-message-bg);
+  align-self: flex-start;
+  border: 1px solid var(--message-border);
 }
 
 .message .text {
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
 }
 
 .message .timestamp {
-    font-size: 0.75rem;
-    color: var(--timestamp-color);
-    margin-top: 4px;
-    text-align: right;
+  font-size: 0.75rem;
+  color: var(--timestamp-color);
+  margin-top: 4px;
+  text-align: right;
 }
 
 .input-container {
-    padding: 15px 20px;
-    background-color: var(--input-background);
-    display: flex;
-    gap: 10px;
+  padding: 15px 20px;
+  background-color: var(--input-background);
+  display: flex;
+  gap: 10px;
 }
 
-.message-input {
-    flex-grow: 1;
-    padding: 10px;
-    border: 1px solid var(--message-border);
-    border-radius: 20px;
-    outline: none;
-    background-color: var(--received-message-bg);
+input[type='text'] {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid var(--message-border);
+  border-radius: 20px;
+  outline: none;
+  width: 100%;
+  background-color: var(--received-message-bg);
 }
 
 .send-button {
-    padding: 10px 20px;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+  padding: 10px 20px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .send-button:hover {
-    background-color: var(--button-hover);
+  background-color: var(--button-hover);
 }
 
 h1 {
-    margin: 20px 0;
-    color: var(--primary-color);
-    text-align: center;
+  margin: 20px 0;
+  color: var(--primary-color);
+  text-align: center;
 }
 
 .scroll-to-bottom {
-    position: fixed;
-    right: calc(50% - 400px + 20px);
-    bottom: 80px;
-    width: var(--scroll-button-size);
-    height: var(--scroll-button-size);
-    border-radius: 50%;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    cursor: pointer;
-    display: none;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  position: fixed;
+  right: calc(50% - 400px + 20px);
+  bottom: 80px;
+  width: var(--scroll-button-size);
+  height: var(--scroll-button-size);
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: none;
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .scroll-to-bottom.visible {
-    display: block;
-    opacity: 0.9;
-    transform: translateY(0);
+  display: block;
+  opacity: 0.9;
+  transform: translateY(0);
 }
 
 .scroll-to-bottom:hover {
-    opacity: 1;
-    background-color: var(--secondary-color);
+  opacity: 1;
+  background-color: var(--secondary-color);
 }
 
 #circle {
-    z-index: 999;
-    cursor: pointer;
-    position: absolute;
-    top: 13%;
-    left: 50%;
-    display: block;
-    width: 50px;
-    height: 50px;
-    background: #f43b3b;
-    transform: translateX(-50%) translateY(-50%);
-    border-radius: 100%;
-    -webkit-border-radius: 100%;
-    -moz-border-radius: 100%;
-    -ms-border-radius: 100%;
-    -o-border-radius: 100%;
-    -webkit-transform: translateX(-50%) translateY(-50%);
-    -moz-transform: translateX(-50%) translateY(-50%);
-    -ms-transform: translateX(-50%) translateY(-50%);
-    -o-transform: translateX(-50%) translateY(-50%);
+  z-index: 999;
+  cursor: pointer;
+  position: absolute;
+  top: 13%;
+  left: 50%;
+  display: block;
+  width: 50px;
+  height: 50px;
+  background: #f43b3b;
+  transform: translateX(-50%) translateY(-50%);
+  border-radius: 100%;
+  -webkit-border-radius: 100%;
+  -moz-border-radius: 100%;
+  -ms-border-radius: 100%;
+  -o-border-radius: 100%;
+  -webkit-transform: translateX(-50%) translateY(-50%);
+  -moz-transform: translateX(-50%) translateY(-50%);
+  -ms-transform: translateX(-50%) translateY(-50%);
+  -o-transform: translateX(-50%) translateY(-50%);
+}
+
+.screen {
+  display: none;
+  height: 100vh;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: var(--background-color);
+}
+
+.screen.active {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 400px;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+#groupList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#groupList li {
+  padding: 1rem;
+  margin: 0.5rem 0;
+  background: var(--background-container-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+#groupList li:hover {
+  background: var(--message-border);
+}
+
+.chat-nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  max-width: 800px;
+  background: var(--received-message-bg);
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.nav-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--primary-color);
+  margin-right: 1rem;
+}
+
+.chat-title {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--text-color);
 }

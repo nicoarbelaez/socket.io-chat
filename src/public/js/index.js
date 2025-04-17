@@ -6,6 +6,12 @@ const scrollToBottomButton = document.querySelector('#scrollToBottom');
 
 let isAutoScrollEnabled = true;
 
+document.getElementById('chatScreen').addEventListener('transitionend', () => {
+  if (document.getElementById('chatScreen').classList.contains('active')) {
+    scrollToBottom();
+  }
+});
+
 const scrollToBottom = () => {
   messagesContainer.scrollTo({
     top: messagesContainer.scrollHeight,

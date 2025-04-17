@@ -1,38 +1,80 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Socket.IO Chat 🔒</title>
-    <link rel="stylesheet" href="/css/styles.css">
-</head>
-<body>
-    <h1>Socket.IO Chat 🔒</h1>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
     <div id="circle"></div>
-    <div class="chat-container">
+
+    <!-- Pantalla de nombre de usuario -->
+    <div id="usernameScreen" class="screen active">
+      <div class="form-container">
+        <h1>Ingresa tu nombre</h1>
+        <form id="usernameForm">
+          <input
+            type="text"
+            id="usernameInput"
+            placeholder="Nombre de usuario"
+            required
+          />
+          <button type="submit" class="submit-button">Continuar</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Pantalla de selección de grupo -->
+    <div id="groupScreen" class="screen">
+      <div class="form-container">
+        <h1>Selecciona un grupo</h1>
+        <ul id="groupList">
+          <li data-group-id="1">Grupo Familiar 👨👩👧👦</li>
+          <li data-group-id="2">Equipo de Trabajo 💼</li>
+          <li data-group-id="3">Amigos 🎉</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Pantalla de chat -->
+    <div id="chatScreen" class="screen">
+      <nav class="chat-nav">
+        <button id="backButton" class="nav-button">←</button>
+        <h2 class="chat-title">Grupo de Chat</h2>
+      </nav>
+
+      <div class="chat-container">
         <div class="messages-container" id="messagesContainer">
-            <div class="message received">
-                <div class="text">¡Hola a todos! 👋</div>
-                <div class="timestamp">10:00 - Juan</div>
-            </div>
-            <div class="message sent">
-                <div class="text">¡Hola Juan! ¿Cómo están?</div>
-                <div class="timestamp">10:01 - Yo</div>
-            </div>
-            <div class="message received">
-                <div class="text">Todo bien, ¿van a la reunión hoy?</div>
-                <div class="timestamp">10:02 - María</div>
-            </div>
+          <div class="message received">
+            <div class="text">¡Hola a todos! 👋</div>
+            <div class="timestamp">10:00 - Juan</div>
+          </div>
+          <div class="message sent">
+            <div class="text">¡Hola Juan! ¿Cómo están?</div>
+            <div class="timestamp">10:01 - Yo</div>
+          </div>
+          <div class="message received">
+            <div class="text">Todo bien, ¿van a la reunión hoy?</div>
+            <div class="timestamp">10:02 - María</div>
+          </div>
         </div>
         <div class="input-container">
-            <input type="text" class="message-input" id="messageInput" placeholder="Escribe un mensaje...">
-            <button class="send-button" id="sendButton">Enviar</button>
+          <input
+            type="text"
+            class="message-input"
+            id="messageInput"
+            placeholder="Escribe un mensaje..."
+          />
+          <button class="send-button" id="sendButton">Enviar</button>
         </div>
+      </div>
+      <button class="scroll-to-bottom" id="scrollToBottom">↓</button>
     </div>
-    <button class="scroll-to-bottom" id="scrollToBottom">↓</button>
 
     <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/ui.js"></script>
     <script src="/js/index.js"></script>
     <script src="/js/circle.js"></script>
-</body>
+  </body>
 </html>
