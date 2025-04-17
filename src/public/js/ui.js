@@ -24,6 +24,7 @@ const UI = {
       if (e.target.tagName === 'LI') {
         const groupId = e.target.dataset.groupId;
         console.log('Grupo seleccionado ID:', groupId);
+        socket.emit('connect_room', groupId);
         this.showScreen('chatScreen');
       }
     });

@@ -61,7 +61,7 @@ sendButton.addEventListener('click', () => {
   const message = messageInput.value.trim();
   if (message) {
     const timestamp = Date.now();
-    socket.emit('send_message', message, socket.id, timestamp); // Envía mensaje al servidor
+    socket.emit('send_message', message, timestamp); // Envía mensaje al servidor
     addMessage({ text: message, timestamp, isSent: true });
     messageInput.value = '';
   }
@@ -73,18 +73,20 @@ socket.on('connect', () => {
   scrollToBottom();
 });
 
-socket.on('new_message', ({ message, id, timestamp, name }) => {
-  const isSent = id == socket.id;
+socket.on('new_message', ({ content, userId, timestamp, name }) => {
+  const isSent = userId == socket.id;
   if (isSent) {
     return;
   }
-  addMessage({ text: message, name, timestamp, isSent });
+  addMessage({ text: content, name, timestamp, isSent });
 });
 
 socket.on('conversation', (messages) => {
-  messages.forEach(({ message, id, timestamp, name }) => {
-    const isSent = id == socket.id;
-    addMessage({ text: message, name, timestamp, isSent });
+  messagesContainer.innerHTML = '';
+
+  messages.forEach(({ content, userId, timestamp, name }) => {
+    const isSent = userId === socket.id;
+    addMessage({ text: content, name, timestamp, isSent });
   });
 });
 

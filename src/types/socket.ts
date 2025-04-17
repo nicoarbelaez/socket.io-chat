@@ -10,8 +10,9 @@ export interface ServerToClientEvents {
 }
 
 export interface ClientToServerEvents {
-  send_message: (message: string, socketId: string, timestamp: number) => void;
+  send_message: (content: string, timestamp: number) => void;
   circle_position: (position: { top: string; left: string }) => void;
+  connect_room: (newRoomId: string) => void;
 }
 
 export interface InterServerEvents {
@@ -19,6 +20,5 @@ export interface InterServerEvents {
 }
 
 export interface SocketData {
-  name: string;
-  age: number;
+  connectedRoom: string;
 }
