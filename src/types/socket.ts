@@ -1,12 +1,15 @@
+import { Message } from '../utils/message';
+
 export interface ServerToClientEvents {
-  new_message: (a: string) => void;
+  conversation: (messages: Message[]) => void;
+  new_message: (messageData: Message) => void;
   noArg: () => void;
   basicEmit: (a: number, b: string, c: Buffer) => void;
   withAck: (d: string, callback: (e: number) => void) => void;
 }
 
 export interface ClientToServerEvents {
-  send_message: (message: string, socketId: string) => void;
+  send_message: (message: string, socketId: string, timestamp: number) => void;
 }
 
 export interface InterServerEvents {
