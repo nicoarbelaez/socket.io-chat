@@ -1,0 +1,141 @@
+import CookieManager from './auth.js';
+import ScreenManager from './ui.js';
+
+export const initChat = (socket) => {
+  const messagesContainer = document.getElementById('messagesContainer');
+  const messageInput = document.querySelector('#messageInput');
+  const $messageError = document.getElementById('messageError');
+  const sendButton = document.querySelector('#sendButton');
+  const scrollToBottomButton = document.querySelector('#scrollToBottom');
+
+  let isAutoScrollEnabled = true;
+
+  const setupEventListeners = () => {
+    messageInput.addEventListener(
+      'keypress',
+      (e) => e.key === 'Enter' && sendButton.click()
+    );
+    scrollToBottomButton.addEventListener('click', scrollToBottom);
+    messagesContainer.addEventListener('scroll', handleScroll);
+    sendButton.addEventListener('click', handleMessageSend);
+
+    document
+      .getElementById('chatScreen')
+      .addEventListener('transitionend', () => {
+        if (
+          document.getElementById('chatScreen').classList.contains('active')
+        ) {
+          scrollToBottom();
+        }
+      });
+  };
+
+  const handleMessageSend = () => {
+    const message = messageInput.value.trim();
+    if (message) {
+      const timestamp = Date.now();
+      socket.emit('send_message', message, timestamp);
+      addMessage({ text: message, timestamp, isSent: true });
+      messageInput.value = '';
+    }
+  };
+
+  const scrollToBottom = () => {
+    messagesContainer.scrollTo({
+      top: messagesContainer.scrollHeight,
+      behavior: 'smooth',
+    });
+  };
+
+  const handleScroll = () => {
+    const fromBottom =
+      messagesContainer.scrollHeight -
+      messagesContainer.scrollTop -
+      messagesContainer.clientHeight;
+
+    isAutoScrollEnabled = fromBottom <= 100;
+    scrollToBottomButton.classList.toggle('visible', !isAutoScrollEnabled);
+  };
+
+  const addMessage = ({ id, text, name, timestamp, isSent }) => {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${isSent ? 'sent' : 'received'}`;
+
+    messageDiv.innerHTML = `
+        <div class="text" data-group-name="${id}">${text}</div>
+        <div class="timestamp">${new Date(timestamp).toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        })} - ${isSent ? 'Yo' : name}</div>
+      `;
+
+    messagesContainer.appendChild(messageDiv);
+    isAutoScrollEnabled && scrollToBottom();
+  };
+
+  const setupSocketHandlers = () => {
+    socket.on('connect', () => {
+      console.log('Conectado al servidor con ID:', socket.id);
+      scrollToBottom();
+    });
+
+    socket.on('new_message', ({ content, username, timestamp }) => {
+      console.log({ content, username, timestamp });
+      if (CookieManager.getUsername() !== username) {
+        addMessage({ text: content, name: username, timestamp, isSent: false });
+      }
+    });
+
+    socket.on('conversation', (messages) => {
+      messagesContainer.innerHTML = '';
+      console.log(messages);
+      messages.forEach(({ id, userId, username, content, timestamp }) =>
+        addMessage({
+          id,
+          text: content,
+          name: username,
+          timestamp,
+          isSent: CookieManager.getUsername() === username,
+        })
+      );
+    });
+
+    socket.on('connect_error', (err) => {
+      console.error('Error de conexión:', err.message);
+    });
+
+    socket.on('username_availability', ({ available, username, message }) => {
+      if (available) {
+        CookieManager.setUsername(username);
+        ScreenManager.showScreen('group');
+        ScreenManager.updateUserInfo(username);
+        $messageError.textContent = '';
+      } else {
+        CookieManager.clearSession();
+        ScreenManager.showScreen('username');
+        $messageError.textContent = message;
+      }
+    });
+
+    socket.on('update_groups', (groups) => {
+      const groupList = document.getElementById('groupList');
+      groupList.innerHTML = groups
+        .map(
+          (group) => `
+        <li data-group-id="${group.id}" data-group-name="${group.name}">
+          ${group.name} ${group.icon || ''}
+        </li>
+      `
+        )
+        .join('');
+    });
+
+    socket.on('room_connected', ({ groupName }) => {
+      document.getElementById('groupNameTitle').textContent = groupName;
+    });
+  };
+
+  // Inicialización
+  setupEventListeners();
+  setupSocketHandlers();
+};

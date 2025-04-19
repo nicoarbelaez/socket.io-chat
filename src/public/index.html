@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,8 +9,7 @@
   <body>
     <div id="circle"></div>
 
-    <!-- Pantalla de nombre de usuario -->
-    <div id="usernameScreen" class="screen active">
+    <div id="usernameScreen" class="screen">
       <div class="form-container">
         <h1>Ingresa tu nombre</h1>
         <form id="usernameForm">
@@ -20,32 +19,34 @@
             placeholder="Nombre de usuario"
             required
           />
+          <span id="messageError"></span>
           <button type="submit" class="submit-button">Continuar</button>
         </form>
       </div>
     </div>
-
-    <!-- Pantalla de selección de grupo -->
+    |
     <div id="groupScreen" class="screen">
       <div class="form-container">
+        <div class="user-info">
+          <span id="currentUsername"></span>
+          <button id="logoutButton" class="logout-button">Cerrar sesión</button>
+        </div>
         <h1>Selecciona un grupo</h1>
-        <ul id="groupList">
-          <li data-group-id="1">Grupo Familiar 👨👩👧👦</li>
-          <li data-group-id="2">Equipo de Trabajo 💼</li>
-          <li data-group-id="3">Amigos 🎉</li>
-        </ul>
+        <ul id="groupList"></ul>
       </div>
     </div>
 
-    <!-- Pantalla de chat -->
     <div id="chatScreen" class="screen">
       <nav class="chat-nav">
         <button id="backButton" class="nav-button">←</button>
-        <h2 class="chat-title">Grupo de Chat</h2>
+        <h2 class="chat-title" id="groupNameTitle">
+          Cargando nombre del grupo...
+        </h2>
       </nav>
 
       <div class="chat-container">
         <div class="messages-container" id="messagesContainer">
+          <!-- Mensajes de ejemplo -->
           <div class="message received">
             <div class="text">¡Hola a todos! 👋</div>
             <div class="timestamp">10:00 - Juan</div>
@@ -73,8 +74,9 @@
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/ui.js"></script>
-    <script src="/js/index.js"></script>
-    <script src="/js/circle.js"></script>
+    <script type="module" src="./js/auth.js"></script>
+    <script type="module" src="./js/ui.js"></script>
+    <script type="module" src="./js/chat.js"></script>
+    <script type="module" src="./js/index.js"></script>
   </body>
 </html>

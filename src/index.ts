@@ -10,8 +10,19 @@ import {
 } from './types/socket';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { addMessage, getMessagesByRoom, rooms } from './utils/message.js';
-import { addSocketOnline } from './utils/socket.js';
+import {
+  addMessage,
+  getAllRooms,
+  getMessagesByRoom,
+  Group,
+} from './utils/message.js';
+import { addSocketOnline, handleAuthentication } from './utils/socket.js';
+import {
+  addUser,
+  getUserBySocketId,
+  isUserOnline,
+  setUserOnlineStatus,
+} from './utils/users.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -37,56 +48,103 @@ const configureStaticAssets = () => {
 };
 
 io.on('connection', (socket) => {
-  // 1) inicializamos sala por defecto
+  const username = socket.handshake.auth.username;
+
+  // Inicializamos sala por defecto
   socket.data.connectedRoom = 'default';
   addSocketOnline(socket.id);
-
-  // 2) enviamos el histórico de la sala solo a este socket
-  // const initialRoom = socket.data.connectedRoom;
-  // const history = getMessagesByRoom(initialRoom);
-  // io.to(socket.id).emit('conversation', history);
 
   console.log(
     `+ (${io.engine.clientsCount}) Nuevo cliente conectado ${socket.id}`
   );
 
-  // 3) cuando llega un mensaje: lo agregamos y emitimos al resto de la sala
+  // Enviar grupos dinámicos
+  const groups: Group[] = [
+    { id: 1, name: 'Grupo Familiar', icon: '👨👩👧👦' },
+    { id: 2, name: 'Equipo de Trabajo', icon: '💼' },
+    { id: 3, name: 'Amigos', icon: '🎉' },
+  ];
+  socket.emit('update_groups', groups);
+
+  // Verificación de autenticación al conectar
+  if (!username) {
+    socket.emit('request_authentication');
+  } else {
+    handleAuthentication(socket, username);
+  }
+
+  // Manejar disponibilidad de nombres de usuario
+  socket.on('check_username', (username) => {
+    const isOnline = isUserOnline(username);
+    if (!isOnline) {
+      addUser(username, socket.id);
+    }
+    socket.emit('username_availability', {
+      available: !isOnline,
+      username,
+      message: 'El nombre de usuario ya está en uso. Por favor, elige otro.',
+    });
+  });
+
+  // Manejar el logout
+  socket.on('logout', () => {
+    const user = getUserBySocketId(socket.id);
+    if (user) {
+      setUserOnlineStatus(user.username, false);
+    }
+  });
+
+  // Cuando llega un mensaje: lo agregamos y emitimos al resto de la sala
   socket.on('send_message', (content: string, timestamp: number) => {
     const roomId = socket.data.connectedRoom;
+    const user = getUserBySocketId(socket.id);
+    if (!user) {
+      return;
+    }
+
     const message = addMessage({
       roomId,
       userId: socket.id,
+      username: user.username,
       content,
       timestamp,
     });
 
-    socket.to(roomId).emit('new_message', message);
-    console.log(JSON.stringify(rooms));
+    io.to(roomId).emit('new_message', {
+      content: message.content,
+      username: message.username,
+      timestamp: message.timestamp,
+    });
   });
 
-  // 4) sincronización de círculo (sin cambios)
+  // Sincronización de círculo (sin cambios)
   socket.on('circle_position', (position) =>
     socket.broadcast.emit('circle_move', position)
   );
 
-  // 5) cambio de sala: salimos de la antigua, entramos a la nueva y enviamos su historial
-  socket.on('connect_room', (newRoomId: string) => {
+  // Cambio de sala: salimos de la antigua, entramos a la nueva y enviamos su historial
+  socket.on('connect_room', ({ groupId, groupName }) => {
+    const room = `room-${groupId}`;
     const oldRoom = socket.data.connectedRoom;
     socket.leave(oldRoom);
 
-    socket.join(newRoomId);
-    socket.data.connectedRoom = newRoomId;
+    socket.join(room);
+    socket.data.connectedRoom = room;
 
-    const roomHistory = getMessagesByRoom(newRoomId);
-    console.log(socket.id, socket.data.connectedRoom);
-    io.to(socket.id).emit('conversation', roomHistory);
+    const roomHistory = getMessagesByRoom(room);
+    socket.emit('conversation', roomHistory);
+    console.log(`[${room}] ${socket.id} se unido al grupo.`);
   });
 
-  // 6) desconexión
+  // Desconexión
   socket.on('disconnect', () => {
     console.log(
       `- (${io.engine.clientsCount}) Cliente desconectado ${socket.id}`
     );
+    const user = getUserBySocketId(socket.id);
+    if (user) {
+      setUserOnlineStatus(user.username, false);
+    }
   });
 });
 
