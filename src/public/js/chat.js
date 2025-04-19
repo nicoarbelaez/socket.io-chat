@@ -80,7 +80,6 @@ export const initChat = (socket) => {
     });
 
     socket.on('new_message', ({ content, username, timestamp }) => {
-      console.log({ content, username, timestamp });
       if (CookieManager.getUsername() !== username) {
         addMessage({ text: content, name: username, timestamp, isSent: false });
       }
@@ -88,7 +87,6 @@ export const initChat = (socket) => {
 
     socket.on('conversation', (messages) => {
       messagesContainer.innerHTML = '';
-      console.log(messages);
       messages.forEach(({ id, userId, username, content, timestamp }) =>
         addMessage({
           id,

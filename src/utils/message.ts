@@ -61,8 +61,6 @@ export function addMessage({
 
   const messages = ensureRoom(roomId);
   messages.push(message);
-  console.log(rooms);
-  console.log(getAllRooms());
   return message;
 }
 

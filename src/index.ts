@@ -55,7 +55,7 @@ io.on('connection', (socket) => {
   addSocketOnline(socket.id);
 
   console.log(
-    `+ (${io.engine.clientsCount}) Nuevo cliente conectado ${socket.id}`
+    `[Server +] Cliente conectado ${socket.id} (${io.engine.clientsCount})`
   );
 
   // Enviar grupos dinámicos
@@ -133,13 +133,13 @@ io.on('connection', (socket) => {
 
     const roomHistory = getMessagesByRoom(room);
     socket.emit('conversation', roomHistory);
-    console.log(`[${room}] ${socket.id} se unido al grupo.`);
+    console.log(`[${room} +] ${socket.id} se unido al grupo.`);
   });
 
   // Desconexión
   socket.on('disconnect', () => {
     console.log(
-      `- (${io.engine.clientsCount}) Cliente desconectado ${socket.id}`
+      `[Server -] Cliente desconectado ${socket.id} (${io.engine.clientsCount})`
     );
     const user = getUserBySocketId(socket.id);
     if (user) {
