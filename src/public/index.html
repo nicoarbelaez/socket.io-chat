@@ -4,73 +4,179 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Socket.IO Chat 🔒</title>
-    <link rel="stylesheet" href="/css/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      @import 'tailwindcss';
+
+      @theme {
+        --color-primary: #00a884;
+        --color-message-received: #ffffff;
+        --color-message-sent: #d9fdd3;
+        --color-background: #f0f2f5;
+        --color-chat-background: #e5ddd5;
+      }
+
+      [type='text'] {
+        @apply w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary;
+      }
+
+      button:not(.back-button) {
+        @apply transition-colors duration-200 ease-in-out hover:opacity-90;
+      }
+
+      body {
+        @apply flex min-h-screen items-center justify-center bg-[#f0f2f5];
+      }
+
+      .screen {
+        @apply flex h-[90vh] w-[90%] max-w-md flex-col overflow-hidden rounded-xl bg-white shadow-2xl;
+      }
+
+      .hidden {
+        @apply hidden;
+      }
+
+      @layer components {
+        /* Componentes de grupos */
+        .group-item {
+          @apply bg-white p-3 rounded-lg flex items-center cursor-pointer;
+        }
+
+        .group-info {
+          @apply flex-1 ml-3;
+        }
+
+        .group-name {
+          @apply font-medium;
+        }
+
+        .group-last-message {
+          @apply text-sm text-gray-600;
+        }
+
+        .unread-count {
+          @apply bg-primary text-white text-xs px-2 py-1 rounded-full;
+        }
+
+        /* Componentes de mensajes */
+        .message {
+          @apply max-w-[75%] my-[8px] px-[12px] py-[8px] rounded-[8px] relative break-words;
+        }
+
+        .message-sent {
+          @apply bg-[var(--color-message-sent)] self-end;
+        }
+
+        .message-received {
+          @apply bg-[var(--color-message-received)] self-start;
+        }
+
+        .message-username {
+          @apply font-bold mb-[4px];
+        }
+
+        .message-status {
+          @apply text-[12px] text-[#667781] absolute right-[5px] bottom-[2px];
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="circle"></div>
+    <div
+      id="circle"
+      class="z-[999] cursor-pointer absolute top-[13%] left-1/2 w-12 h-12 bg-[#f43b3b] rounded-full -translate-x-1/2 -translate-y-1/2"
+    ></div>
 
     <div id="usernameScreen" class="screen">
-      <div class="form-container">
-        <h1>Ingresa tu nombre</h1>
-        <form id="usernameForm">
-          <input
-            type="text"
-            id="usernameInput"
-            placeholder="Nombre de usuario"
-            required
-          />
-          <span id="messageError"></span>
-          <button type="submit" class="submit-button">Continuar</button>
-        </form>
-      </div>
+      <h1 class="mt-4 mb-4 text-center text-4xl font-semibold">Symtem Chat</h1>
+      <form
+        id="usernameForm"
+        class="flex-1 flex flex-col items-center justify-center p-5 space-y-4"
+      >
+        <label class="text-left" for="usernameInput">Nombre</label>
+        <input
+          type="text"
+          id="usernameInput"
+          placeholder="Juan Perez"
+          required
+        />
+        <span id="messageError" class="text-[#ee142a] p-2.5 text-sm"></span>
+        <button
+          type="submit"
+          class="bg-primary text-white px-6 py-3 rounded-lg"
+        >
+          Continuar
+        </button>
+      </form>
     </div>
-    |
-    <div id="groupScreen" class="screen">
+
+    <div id="groupScreen" class="hidden">
       <div class="form-container">
-        <div class="user-info">
-          <span id="currentUsername"></span>
-          <button id="logoutButton" class="logout-button">Cerrar sesión</button>
+        <div class="bg-primary text-white p-4 sticky top-0 z-10">
+          <h3 class="text-lg font-medium">
+            Hola, <span id="currentUsername"></span>
+          </h3>
+          <button id="logoutButton">Cerrar sesión</button>
         </div>
-        <h1>Selecciona un grupo</h1>
-        <ul id="groupList"></ul>
+        <ul
+          id="groupList"
+          class="flex-1 overflow-y-auto min-h-0 p-2 space-y-2 groups-list"
+        ></ul>
       </div>
     </div>
 
-    <div id="chatScreen" class="screen">
-      <nav class="chat-nav">
-        <button id="backButton" class="nav-button">←</button>
-        <h2 class="chat-title" id="groupNameTitle">
+    <div id="chatScreen" class="hidden">
+      <nav
+        class="bg-primary text-white p-[15px] flex items-center sticky top-0 z-[1]"
+      >
+        <button
+          id="backButton"
+          class="bg-transparent border-0 text-white text-[20px] mr-[15px] cursor-pointer"
+        >
+          ←
+        </button>
+        <h2 class="text-lg font-medium" id="groupNameTitle">
           Cargando nombre del grupo...
         </h2>
       </nav>
 
-      <div class="chat-container">
-        <div class="messages-container" id="messagesContainer">
-          <!-- Mensajes de ejemplo -->
-          <div class="message received">
-            <div class="text">¡Hola a todos! 👋</div>
-            <div class="timestamp">10:00 - Juan</div>
-          </div>
-          <div class="message sent">
-            <div class="text">¡Hola Juan! ¿Cómo están?</div>
-            <div class="timestamp">10:01 - Yo</div>
-          </div>
-          <div class="message received">
-            <div class="text">Todo bien, ¿van a la reunión hoy?</div>
-            <div class="timestamp">10:02 - María</div>
-          </div>
+      <div
+        class="flex-1 overflow-y-auto p-[10px] bg-[#e5ddd5] flex flex-col min-h-0"
+        id="messagesContainer"
+      >
+        <div class="message message-sent">
+          Mensaje 1 en Grupo 1 - Lorem ipsum dolor sit amet.
+          <span class="message-status">10:00 AM ✓</span>
         </div>
-        <div class="input-container">
-          <input
-            type="text"
-            class="message-input"
-            id="messageInput"
-            placeholder="Escribe un mensaje..."
-          />
-          <button class="send-button" id="sendButton">Enviar</button>
+
+        <div class="message message-received">
+          <div class="message-username">Usuario</div>
+          Mensaje 2 en Grupo 1 - Lorem ipsum dolor sit amet.
+          <span class="message-status">10:00 AM ✓</span>
         </div>
       </div>
-      <button class="scroll-to-bottom" id="scrollToBottom">↓</button>
+
+      <div class="flex p-[10px] bg-white sticky bottom-0 z-[1]">
+        <input
+          type="text"
+          class="flex-1 p-[12px] border border-[#ddd] rounded-[20px] mr-[10px]"
+          id="messageInput"
+          placeholder="Escribe un mensaje..."
+        />
+        <button
+          class="bg-[#00a884] text-white border-0 px-[15px] py-[10px] rounded-full cursor-pointer"
+          id="sendButton"
+        >
+          Enviar
+        </button>
+      </div>
+
+      <button
+        class="fixed z-[999] bottom-[80px] right-[30px] bg-[rgba(0,0,0,0.7)] text-white border-0 p-[10px] rounded-full cursor-pointer hidden transition-opacity duration-300"
+        id="scrollToBottom"
+      >
+        ↓
+      </button>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>

@@ -58,18 +58,39 @@ export const initChat = (socket) => {
   };
 
   const addMessage = ({ id, text, name, timestamp, isSent }) => {
+    const date = new Date(timestamp).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    // Crear el contenedor del mensaje
     const messageDiv = document.createElement('div');
-    messageDiv.className = `message ${isSent ? 'sent' : 'received'}`;
+    messageDiv.classList.add('message');
+    messageDiv.classList.add(isSent ? 'message-sent' : 'message-received');
+    messageDiv.dataset.groupName = id;
 
-    messageDiv.innerHTML = `
-        <div class="text" data-group-name="${id}">${text}</div>
-        <div class="timestamp">${new Date(timestamp).toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-        })} - ${isSent ? 'Yo' : name}</div>
-      `;
+    // Si es mensaje recibido, agregar nombre
+    if (!isSent) {
+      const nameDiv = document.createElement('div');
+      nameDiv.classList.add('message-username');
+      nameDiv.textContent = name;
+      messageDiv.appendChild(nameDiv);
+    }
 
+    // Contenido del mensaje
+    const textNode = document.createTextNode(text);
+    messageDiv.appendChild(textNode);
+
+    // Timestamp
+    const statusSpan = document.createElement('span');
+    statusSpan.classList.add('message-status');
+    statusSpan.textContent = `${date} ✓`;
+    messageDiv.appendChild(statusSpan);
+
+    // Agregar al contenedor
     messagesContainer.appendChild(messageDiv);
+
+    // Scroll automático si está habilitado
     isAutoScrollEnabled && scrollToBottom();
   };
 
@@ -85,18 +106,18 @@ export const initChat = (socket) => {
       }
     });
 
-    socket.on('conversation', (messages) => {
-      messagesContainer.innerHTML = '';
-      messages.forEach(({ id, userId, username, content, timestamp }) =>
-        addMessage({
-          id,
-          text: content,
-          name: username,
-          timestamp,
-          isSent: CookieManager.getUsername() === username,
-        })
-      );
-    });
+    // socket.on('conversation', (messages) => {
+    //   messagesContainer.innerHTML = '';
+    //   messages.forEach(({ id, userId, username, content, timestamp }) =>
+    //     addMessage({
+    //       id,
+    //       text: content,
+    //       name: username,
+    //       timestamp,
+    //       isSent: CookieManager.getUsername() === username,
+    //     })
+    //   );
+    // });
 
     socket.on('connect_error', (err) => {
       console.error('Error de conexión:', err.message);
@@ -120,8 +141,12 @@ export const initChat = (socket) => {
       groupList.innerHTML = groups
         .map(
           (group) => `
-        <li data-group-id="${group.id}" data-group-name="${group.name}">
-          ${group.name} ${group.icon || ''}
+        <li class="group-item" data-group-id="${group.id}" data-group-name="${group.name}">
+          <div class="group-info">
+            <h3 class="group-name">${group.name} ${group.icon || ''}</h3>
+            <p class="group-last-message">Último mensaje 1</p>
+          </div>
+          <span class="unread-count">4</span>
         </li>
       `
         )

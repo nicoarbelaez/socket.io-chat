@@ -24,12 +24,10 @@ const ScreenManager = {
 
     document.getElementById('groupList').addEventListener('click', (e) => {
       const target = e.target;
-      if (target.tagName === 'LI') {
-        this.handleGroupSelection(
-          target.dataset.groupId,
-          target.textContent.trim()
-        );
-      }
+      this.handleGroupSelection(
+        target.dataset.groupId,
+        target.textContent.trim()
+      );
     });
 
     document.getElementById('backButton').addEventListener('click', () => {
@@ -59,15 +57,20 @@ const ScreenManager = {
 
   updateUserInfo(username) {
     document.getElementById('currentUsername').textContent =
-      `Usuario: ${decodeURIComponent(username)}`;
+      `${decodeURIComponent(username)}`;
   },
 
   showScreen(screen) {
-    Object.values(this.screens).forEach((s) => s.classList.remove('active'));
-    this.screens[screen].classList.add('active');
+    Object.values(this.screens).forEach((s) => {
+      s.classList.remove('screen');
+      s.classList.add('hidden');
+    });
+    this.screens[screen].classList.remove('hidden');
+    this.screens[screen].classList.add('screen');
   },
 
   handleGroupSelection(groupId, groupName) {
+    console.log('Si');
     document.getElementById('groupNameTitle').textContent = groupName;
     this.socket.emit('connect_room', { groupId, groupName });
     this.showScreen('chat');
