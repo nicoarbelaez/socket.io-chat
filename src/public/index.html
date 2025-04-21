@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" class="">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,131 +7,201 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style type="text/tailwindcss">
       @import 'tailwindcss';
+      /* activar variantes dark sólo cuando <html class="dark"> */
+      @custom-variant dark (&:where(.dark, .dark *));
 
-      @theme {
-        --color-primary: #00a884;
-        --color-message-received: #ffffff;
-        --color-message-sent: #d9fdd3;
-        --color-background: #f0f2f5;
-        --color-chat-background: #e5ddd5;
-      }
-
+      /* Inputs */
       [type='text'] {
-        @apply w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary;
+        @apply w-full rounded-lg border border-gray-300 bg-white p-3
+               focus:ring-2 focus:ring-emerald-600 focus:outline-none
+               dark:border-gray-600 dark:bg-gray-700 dark:focus:ring-emerald-400;
       }
 
+      /* Botones genéricos */
       button:not(.back-button) {
         @apply transition-colors duration-200 ease-in-out hover:opacity-90;
       }
 
+      /* Body y contenedor principal */
       body {
-        @apply flex min-h-screen items-center justify-center bg-[#f0f2f5];
+        @apply flex min-h-screen items-center justify-center
+               bg-slate-200 dark:bg-slate-900;
       }
 
       .screen {
-        @apply flex h-[90vh] w-[90%] max-w-md flex-col overflow-hidden rounded-xl bg-white shadow-2xl;
+        @apply flex h-[90vh] w-11/12 max-w-md flex-col overflow-hidden
+               rounded-xl bg-white dark:bg-gray-800 shadow-2xl;
       }
 
       .hidden {
         @apply hidden;
       }
 
-      @layer components {
-        /* Componentes de grupos */
-        .group-item {
-          @apply bg-white p-3 rounded-lg flex items-center cursor-pointer;
-        }
+      /* Grupos */
+      .group-item {
+        @apply flex cursor-pointer items-center rounded-lg border-b
+               border-emerald-400 bg-emerald-50 p-3
+               dark:border-emerald-700 dark:bg-emerald-800;
+      }
+      .group-info {
+        @apply ml-3 flex-1;
+      }
+      .group-name {
+        @apply font-medium text-gray-900 dark:text-white;
+      }
+      .group-last-message {
+        @apply text-sm text-gray-600 dark:text-gray-400;
+      }
+      .notification-badge {
+        @apply relative mx-2 my-1 flex size-6 items-center justify-center;
+      }
+      .notification-ping {
+        @apply absolute inline-flex h-full w-full
+               motion-safe:animate-ping rounded-full bg-emerald-600 opacity-75;
+      }
+      .notification-circle {
+        @apply relative inline-flex size-6 items-center justify-center
+               rounded-full bg-emerald-600 text-sm font-medium text-white;
+      }
 
-        .group-info {
-          @apply flex-1 ml-3;
-        }
+      /* Mensajes */
+      .message {
+        @apply relative my-2 max-w-3/4 rounded-lg px-2.5 py-2 break-words;
+      }
+      .message-sent {
+        @apply self-end bg-emerald-200 dark:bg-emerald-700;
+      }
+      .message-received {
+        @apply self-start bg-emerald-50 dark:bg-gray-700;
+      }
+      .message-username {
+        @apply mb-4 font-bold text-gray-900 dark:text-white;
+      }
+      .message-status {
+        @apply absolute right-5 bottom-2 text-xs text-gray-500
+               dark:text-gray-400;
+      }
 
-        .group-name {
-          @apply font-medium;
-        }
-
-        .group-last-message {
-          @apply text-sm text-gray-600;
-        }
-
-        .unread-count {
-          @apply bg-primary text-white text-xs px-2 py-1 rounded-full;
-        }
-
-        /* Componentes de mensajes */
-        .message {
-          @apply max-w-[75%] my-[8px] px-[12px] py-[8px] rounded-[8px] relative break-words;
-        }
-
-        .message-sent {
-          @apply bg-[var(--color-message-sent)] self-end;
-        }
-
-        .message-received {
-          @apply bg-[var(--color-message-received)] self-start;
-        }
-
-        .message-username {
-          @apply font-bold mb-[4px];
-        }
-
-        .message-status {
-          @apply text-[12px] text-[#667781] absolute right-[5px] bottom-[2px];
-        }
+      /* Scroll‑to‑bottom bounce */
+      #scrollToBottom {
+        @apply absolute -top-12 right-2 z-50 size-10
+               motion-safe:animate-bounce cursor-pointer items-center
+               justify-center rounded-full bg-green-50 p-2
+               hover:bg-green-200 dark:bg-gray-700 dark:hover:bg-gray-600;
       }
     </style>
   </head>
   <body>
+    <!-- Reemplazo del círculo por avión de papel -->
     <div
       id="circle"
-      class="z-[999] cursor-pointer absolute top-[13%] left-1/2 w-12 h-12 bg-[#f43b3b] rounded-full -translate-x-1/2 -translate-y-1/2"
-    ></div>
+      class="absolute top-1/5 left-1/2 z-50 flex size-12 -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-emerald-600 opacity-75 shadow-lg transition-transform duration-300 hover:rotate-12 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6 text-white"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"
+        />
+      </svg>
+    </div>
 
+    <!-- Botón flotante para cambiar theme -->
+    <button
+      id="themeToggle"
+      class="fixed bottom-4 left-4 z-50 p-3 rounded-full bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors focus:outline-none"
+      aria-label="Toggle Theme"
+    >
+      <!-- ícono simple de sol/luna -->
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6 text-gray-800 dark:text-gray-200"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 3v1m0 16v1m8.66-11h-1M4.34 12h-1
+             M18.364 5.636l-.707.707M6.343 17.657l-.707.707
+             M18.364 18.364l-.707-.707M6.343 6.343l-.707-.707"
+        />
+        <circle cx="12" cy="12" r="5" class="fill-current" />
+      </svg>
+    </button>
+
+    <!-- Pantalla de nombre de usuario -->
     <div id="usernameScreen" class="screen">
-      <h1 class="mt-4 mb-4 text-center text-4xl font-semibold">Symtem Chat</h1>
+      <h1 class="mt-4 mb-4 text-center text-4xl font-semibold">
+        Symtem Chat 🙊
+      </h1>
       <form
         id="usernameForm"
-        class="flex-1 flex flex-col items-center justify-center p-5 space-y-4"
+        class="static flex flex-1 flex-col items-center justify-center p-5"
       >
-        <label class="text-left" for="usernameInput">Nombre</label>
+        <label class="mb-4 text-left" for="usernameInput">Nombre</label>
         <input
           type="text"
           id="usernameInput"
           placeholder="Juan Perez"
           required
         />
-        <span id="messageError" class="text-[#ee142a] p-2.5 text-sm"></span>
+        <span id="messageError" class="p-2.5 text-sm text-red-600"></span>
         <button
           type="submit"
-          class="bg-primary text-white px-6 py-3 rounded-lg"
+          class="rounded-lg bg-emerald-600 px-6 py-3 text-white dark:bg-emerald-500 dark:hover:bg-emerald-400"
         >
           Continuar
         </button>
       </form>
     </div>
 
+    <!-- Pantalla de grupos -->
     <div id="groupScreen" class="hidden">
-      <div class="form-container">
-        <div class="bg-primary text-white p-4 sticky top-0 z-10">
+      <div class="form-container flex flex-col h-full">
+        <div
+          class="sticky top-0 z-10 bg-emerald-600 p-4 text-white flex items-center"
+        >
           <h3 class="text-lg font-medium">
             Hola, <span id="currentUsername"></span>
           </h3>
-          <button id="logoutButton">Cerrar sesión</button>
+          <button class="ml-auto cursor-pointer" id="logoutButton">
+            Cerrar sesión
+          </button>
         </div>
         <ul
           id="groupList"
-          class="flex-1 overflow-y-auto min-h-0 p-2 space-y-2 groups-list"
-        ></ul>
+          class="groups-list flex-1 space-y-2 overflow-y-auto p-2"
+        >
+          <li class="group-item" data-group-id="1" data-group-name="group">
+            <div class="group-info">
+              <h3 class="group-name">Grupo Familiar 👨👩👧👦</h3>
+              <p class="group-last-message">Último mensaje 1</p>
+            </div>
+            <span class="notification-badge">
+              <span class="notification-ping"></span>
+              <span class="notification-circle">4</span>
+            </span>
+          </li>
+        </ul>
       </div>
     </div>
 
-    <div id="chatScreen" class="hidden">
-      <nav
-        class="bg-primary text-white p-[15px] flex items-center sticky top-0 z-[1]"
-      >
+    <!-- Pantalla de chat -->
+    <div id="chatScreen" class="hidden flex flex-col h-full">
+      <nav class="sticky top-0 flex items-center bg-emerald-600 p-4 text-white">
         <button
           id="backButton"
-          class="bg-transparent border-0 text-white text-[20px] mr-[15px] cursor-pointer"
+          class="mr-4 cursor-pointer border-0 bg-transparent text-lg text-white"
         >
           ←
         </button>
@@ -141,14 +211,13 @@
       </nav>
 
       <div
-        class="flex-1 overflow-y-auto p-[10px] bg-[#e5ddd5] flex flex-col min-h-0"
         id="messagesContainer"
+        class="flex-1 flex flex-col overflow-y-auto bg-gray-200 p-2.5 dark:bg-gray-900"
       >
         <div class="message message-sent">
           Mensaje 1 en Grupo 1 - Lorem ipsum dolor sit amet.
           <span class="message-status">10:00 AM ✓</span>
         </div>
-
         <div class="message message-received">
           <div class="message-username">Usuario</div>
           Mensaje 2 en Grupo 1 - Lorem ipsum dolor sit amet.
@@ -156,33 +225,55 @@
         </div>
       </div>
 
-      <div class="flex p-[10px] bg-white sticky bottom-0 z-[1]">
+      <div class="sticky bottom-0 flex bg-white p-2.5 dark:bg-gray-800">
         <input
           type="text"
-          class="flex-1 p-[12px] border border-[#ddd] rounded-[20px] mr-[10px]"
+          class="mr-2.5 flex-1 rounded-3xl border border-gray-300 p-3 dark:border-gray-600 dark:bg-gray-700"
           id="messageInput"
           placeholder="Escribe un mensaje..."
         />
         <button
-          class="bg-[#00a884] text-white border-0 px-[15px] py-[10px] rounded-full cursor-pointer"
           id="sendButton"
+          class="cursor-pointer rounded-2xl border-0 bg-emerald-600 px-4 py-2.5 text-white dark:bg-emerald-500 dark:hover:bg-emerald-400"
         >
           Enviar
         </button>
+        <button id="scrollToBottom">
+          <svg
+            class="text-emerald-600 size-6"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+          </svg>
+        </button>
       </div>
-
-      <button
-        class="fixed z-[999] bottom-[80px] right-[30px] bg-[rgba(0,0,0,0.7)] text-white border-0 p-[10px] rounded-full cursor-pointer hidden transition-opacity duration-300"
-        id="scrollToBottom"
-      >
-        ↓
-      </button>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
+    <script type="module" src="./js/circle.js"></script>
     <script type="module" src="./js/auth.js"></script>
     <script type="module" src="./js/ui.js"></script>
     <script type="module" src="./js/chat.js"></script>
     <script type="module" src="./js/index.js"></script>
+
+    <script>
+      const toggle = document.getElementById('themeToggle');
+      const root = document.documentElement;
+      const saved = localStorage.getItem('theme');
+      if (saved === 'dark') root.classList.add('dark');
+      else if (saved === 'light') root.classList.remove('dark');
+      else if (window.matchMedia('(prefers-color-scheme: dark)').matches)
+        root.classList.add('dark');
+
+      toggle.addEventListener('click', () => {
+        const isDark = root.classList.toggle('dark');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      });
+    </script>
   </body>
 </html>

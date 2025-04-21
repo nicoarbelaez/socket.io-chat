@@ -70,7 +70,6 @@ const ScreenManager = {
   },
 
   handleGroupSelection(groupId, groupName) {
-    console.log('Si');
     document.getElementById('groupNameTitle').textContent = groupName;
     this.socket.emit('connect_room', { groupId, groupName });
     this.showScreen('chat');

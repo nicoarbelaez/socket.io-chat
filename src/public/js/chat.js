@@ -106,18 +106,18 @@ export const initChat = (socket) => {
       }
     });
 
-    // socket.on('conversation', (messages) => {
-    //   messagesContainer.innerHTML = '';
-    //   messages.forEach(({ id, userId, username, content, timestamp }) =>
-    //     addMessage({
-    //       id,
-    //       text: content,
-    //       name: username,
-    //       timestamp,
-    //       isSent: CookieManager.getUsername() === username,
-    //     })
-    //   );
-    // });
+    socket.on('conversation', (messages) => {
+      messagesContainer.innerHTML = '';
+      messages.forEach(({ id, userId, username, content, timestamp }) =>
+        addMessage({
+          id,
+          text: content,
+          name: username,
+          timestamp,
+          isSent: CookieManager.getUsername() === username,
+        })
+      );
+    });
 
     socket.on('connect_error', (err) => {
       console.error('Error de conexión:', err.message);
@@ -146,7 +146,10 @@ export const initChat = (socket) => {
             <h3 class="group-name">${group.name} ${group.icon || ''}</h3>
             <p class="group-last-message">Último mensaje 1</p>
           </div>
-          <span class="unread-count">4</span>
+          <span class="notification-badge">
+            <span class="notification-ping"></span>
+            <span class="notification-circle">4</span>
+          </span>
         </li>
       `
         )

@@ -1,6 +1,7 @@
 import ScreenManager from './ui.js';
 import { initChat } from './chat.js';
 import CookieManager from './auth.js';
+import InitCircleDrag from './circle.js';
 
 // Inicialización principal
 document.addEventListener('DOMContentLoaded', () => {
@@ -12,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   ScreenManager.init(socket);
+  InitCircleDrag(socket);
   initChat(socket);
   socket.connect();
 });
