@@ -54,7 +54,7 @@ export const initChat = (socket) => {
       messagesContainer.clientHeight;
 
     isAutoScrollEnabled = fromBottom <= 100;
-    scrollToBottomButton.classList.toggle('visible', !isAutoScrollEnabled);
+    scrollToBottomButton.classList.toggle('hidden', isAutoScrollEnabled);
   };
 
   const addMessage = ({ id, text, name, timestamp, isSent }) => {
