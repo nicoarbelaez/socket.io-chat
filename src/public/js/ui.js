@@ -18,29 +18,35 @@ const ScreenManager = {
       e.preventDefault();
       const username = document.getElementById('usernameInput').value.trim();
       if (username) {
-        this.socket.emit('check_username', username);
+        this.socket.emit('user_register', username);
       }
     });
 
     document.getElementById('groupList').addEventListener('click', (e) => {
-      const target = e.target;
-      this.handleGroupSelection(
-        target.dataset.groupId,
-        target.textContent.trim()
-      );
+      const groupItem = e.target.closest('.group-item');
+      if (groupItem) {
+        const groupId = groupItem.dataset.groupId;
+        const groupNameElement = groupItem.querySelector('.group-name');
+        const groupName = groupNameElement
+          ? groupNameElement.textContent.trim()
+          : 'Hubo un error';
+
+        this.handleGroupSelection(groupId, groupName);
+      }
     });
 
     document.getElementById('backButton').addEventListener('click', () => {
+      this.socket.emit('group_leave');
       this.showScreen('group');
     });
 
     document.getElementById('logoutButton').addEventListener('click', () => {
       CookieManager.clearSession();
       this.showScreen('username');
-      this.socket.emit('logout');
+      this.socket.emit('user_logout');
     });
 
-    this.socket.on('request_authentication', () => {
+    this.socket.on('session_expired', () => {
       this.showScreen('username');
     });
   },
@@ -69,9 +75,9 @@ const ScreenManager = {
     this.screens[screen].classList.add('screen');
   },
 
-  handleGroupSelection(groupId, groupName) {
+  handleGroupSelection(roomId, groupName) {
     document.getElementById('groupNameTitle').textContent = groupName;
-    this.socket.emit('connect_room', { groupId, groupName });
+    this.socket.emit('group_join', roomId);
     this.showScreen('chat');
   },
 };

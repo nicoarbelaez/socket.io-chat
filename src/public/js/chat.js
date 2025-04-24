@@ -34,7 +34,7 @@ export const initChat = (socket) => {
     const message = messageInput.value.trim();
     if (message) {
       const timestamp = Date.now();
-      socket.emit('send_message', message, timestamp);
+      socket.emit('message_send', message, timestamp);
       addMessage({ text: message, timestamp, isSent: true });
       messageInput.value = '';
     }
@@ -106,7 +106,7 @@ export const initChat = (socket) => {
       }
     });
 
-    socket.on('conversation', (messages) => {
+    socket.on('group_conversation', (messages) => {
       messagesContainer.innerHTML = '';
       messages.forEach(({ id, userId, username, content, timestamp }) =>
         addMessage({
@@ -123,27 +123,28 @@ export const initChat = (socket) => {
       console.error('Error de conexión:', err.message);
     });
 
-    socket.on('username_availability', ({ available, username, message }) => {
+    socket.on('user_availability', ({ available, user }) => {
       if (available) {
-        CookieManager.setUsername(username);
+        CookieManager.setUsername(user.username);
         ScreenManager.showScreen('group');
-        ScreenManager.updateUserInfo(username);
+        ScreenManager.updateUserInfo(user.username);
         $messageError.textContent = '';
+        socket.emit('group_get');
       } else {
         CookieManager.clearSession();
         ScreenManager.showScreen('username');
-        $messageError.textContent = message;
+        $messageError.textContent = 'El usuario ya está en uso.';
       }
     });
 
-    socket.on('update_groups', (groups) => {
+    socket.on('group_updated', (groups) => {
       const groupList = document.getElementById('groupList');
       groupList.innerHTML = groups
         .map(
-          (group) => `
-        <li class="group-item" data-group-id="${group.id}" data-group-name="${group.name}">
+          ({ id, name, icon }) => `
+        <li class="group-item" data-group-id="${id}" data-group-name="${name}">
           <div class="group-info">
-            <h3 class="group-name">${group.name} ${group.icon || ''}</h3>
+            <h3 class="group-name">${name} ${icon || ''}</h3>
             <p class="group-last-message">Último mensaje 1</p>
           </div>
           <span class="notification-badge">

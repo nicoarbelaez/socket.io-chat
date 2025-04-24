@@ -7,7 +7,7 @@
   "scripts": {
     "lint": "eslint . --ext .ts",
     "format": "prettier --write .",
-    "dev": "nodemon --watch src --exec \"node --loader ts-node/esm\" src/index.ts",
+    "dev": "nodemon --watch src --exec \"node --experimental-specifier-resolution=node --loader ts-node/esm\" src/index.ts",
     "build": "tsc",
     "build:client": "esbuild src/views/js/index.ts --bundle --outfile=public/js/index.js --platform=browser",
     "start": "node dist/index.js"
@@ -19,7 +19,8 @@
   "dependencies": {
     "express": "^5.1.0",
     "socket.io": "^4.8.1",
-    "socket.io-chat": "file:"
+    "socket.io-chat": "file:",
+    "zod": "^3.24.3"
   },
   "devDependencies": {
     "@types/express": "^5.0.1",
