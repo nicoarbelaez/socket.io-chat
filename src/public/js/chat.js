@@ -145,11 +145,13 @@ export const initChat = (socket) => {
         ScreenManager.showScreen('group');
         ScreenManager.updateUserInfo(user.username);
         $messageError.textContent = '';
+        $messageError.classList.add('hidden');
         socket.emit('group_get');
       } else {
         CookieManager.clearSession();
         ScreenManager.showScreen('username');
         $messageError.textContent = 'El usuario ya está en uso.';
+        $messageError.classList.remove('hidden');
       }
     });
 
