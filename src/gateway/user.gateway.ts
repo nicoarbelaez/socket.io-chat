@@ -56,18 +56,6 @@ export class UserGateway extends BaseGateway {
       socket.data.user = null;
     }
 
-    console.log(
-      '========',
-      username,
-      {
-        socket: socket.id,
-        isOnline,
-        user,
-        users: this.userService.getAllUsers(),
-      },
-      '========'
-    );
-
     socket.emit('user_availability', {
       available: !isOnline,
       user,

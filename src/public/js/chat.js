@@ -25,7 +25,7 @@ export const initChat = (socket) => {
         if (
           document.getElementById('chatScreen').classList.contains('active')
         ) {
-          scrollToBottom();
+          scrollToBottom(true); // Forzar scroll al entrar al chat
         }
       });
   };
@@ -40,7 +40,9 @@ export const initChat = (socket) => {
     }
   };
 
-  const scrollToBottom = () => {
+  const scrollToBottom = (force = false) => {
+    if (!force && !isAutoScrollEnabled) return;
+
     messagesContainer.scrollTo({
       top: messagesContainer.scrollHeight,
       behavior: 'smooth',
@@ -48,12 +50,17 @@ export const initChat = (socket) => {
   };
 
   const handleScroll = () => {
+    const hasScroll =
+      messagesContainer.scrollHeight > messagesContainer.clientHeight;
+    if (!hasScroll) {
+      scrollToBottomButton.classList.add('hidden');
+      return;
+    }
     const fromBottom =
       messagesContainer.scrollHeight -
       messagesContainer.scrollTop -
       messagesContainer.clientHeight;
-
-    isAutoScrollEnabled = fromBottom <= 100;
+    isAutoScrollEnabled = fromBottom <= 50;
     scrollToBottomButton.classList.toggle('hidden', isAutoScrollEnabled);
   };
 
@@ -90,14 +97,15 @@ export const initChat = (socket) => {
     // Agregar al contenedor
     messagesContainer.appendChild(messageDiv);
 
-    // Scroll automático si está habilitado
     isAutoScrollEnabled && scrollToBottom();
+    // Verificar scroll y auto-scroll si está habilitado
+    handleScroll();
   };
 
   const setupSocketHandlers = () => {
     socket.on('connect', () => {
       console.log('Conectado al servidor con ID:', socket.id);
-      scrollToBottom();
+      scrollToBottom(true); // Forzar scroll al conectar
     });
 
     socket.on(
@@ -124,6 +132,7 @@ export const initChat = (socket) => {
           isSent: CookieManager.getUsername() === username,
         })
       );
+      scrollToBottom(true); // Forzar scroll al cargar conversación
     });
 
     socket.on('connect_error', (err) => {
@@ -166,6 +175,7 @@ export const initChat = (socket) => {
 
     socket.on('room_connected', ({ groupName }) => {
       document.getElementById('groupNameTitle').textContent = groupName;
+      scrollToBottom(true); // Forzar scroll al entrar a una sala
     });
   };
 
