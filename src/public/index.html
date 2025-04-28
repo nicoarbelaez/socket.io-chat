@@ -11,10 +11,12 @@
       @custom-variant dark (&:where(.dark, .dark *));
 
       /* Inputs */
-      [type='text'] {
+
+      /* styles.css */
+      .form-control {
         @apply w-full rounded-lg border border-gray-300 bg-white p-3
-                focus:ring-2 focus:ring-emerald-600 focus:outline-none
-                dark:border-gray-600 dark:bg-gray-700 dark:focus:ring-emerald-400;
+          focus:ring-2 focus:ring-emerald-600 focus:outline-none
+          dark:border-gray-600 dark:bg-gray-700 dark:focus:ring-emerald-400;
       }
 
       /* Botones genéricos */
@@ -29,8 +31,8 @@
       }
 
       .screen {
-        @apply flex md:h-[95vh] h-dvh md:w-11/12 w-dvh max-w-md flex-col overflow-hidden
-                rounded-xl bg-white shadow-2xl dark:bg-gray-800;
+        @apply flex h-dvh w-dvh max-w-md flex-col overflow-hidden rounded-xl bg-white
+                shadow-2xl md:h-[95vh] md:w-11/12 dark:bg-gray-800;
       }
 
       .hidden {
@@ -93,40 +95,16 @@
   </head>
   <body>
     <!-- Reemplazo del círculo por avión de papel -->
-    <div
-      id="circle"
-      class="absolute top-1/5 left-1/2 z-50 flex size-12 -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-emerald-600 opacity-75 shadow-lg transition-transform duration-300 hover:rotate-12 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-6 w-6 text-white"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"
-        />
+    <div id="circle" class="absolute top-1/5 left-1/2 z-50 flex size-12 -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-emerald-600 opacity-75 shadow-lg transition-transform duration-300 hover:rotate-12 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
       </svg>
     </div>
 
     <!-- Botón flotante para cambiar theme -->
-    <button
-      id="themeToggle"
-      class="fixed top-1/2 right-4 z-50 cursor-pointer rounded-full dark:border-2 dark:border-gray-200 p-3 transition-colors focus:outline-none md:top-4 bg-gray-200 dark:bg-transparent"
-      aria-label="Toggle Theme"
-    >
+    <button id="themeToggle" class="fixed top-1/2 right-4 z-50 cursor-pointer rounded-full bg-gray-200 p-3 transition-colors focus:outline-none md:top-4 dark:border-2 dark:border-gray-200 dark:bg-transparent" aria-label="Toggle Theme">
       <!-- ícono simple de sol/luna -->
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-6 w-6 text-gray-800 dark:text-gray-300"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-800 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
@@ -141,47 +119,40 @@
 
     <!-- Pantalla de nombre de usuario -->
     <div id="usernameScreen" class="screen">
-      <h1 class="mt-4 mb-4 text-center text-4xl font-semibold">
-        Symtem Chat 🙊
-      </h1>
-      <form
-        id="usernameForm"
-        class="static flex flex-1 flex-col items-center justify-center p-5"
-      >
-        <label class="mb-4 text-left" for="usernameInput">Nombre</label>
-        <input
-          type="text"
-          id="usernameInput"
-          placeholder="Juan Perez"
-          required
-        />
-        <span id="messageError" class="p-2.5 text-sm text-red-600"></span>
-        <button
-          type="submit"
-          class="rounded-lg bg-emerald-600 px-6 py-3 text-white dark:bg-emerald-500 dark:hover:bg-emerald-400 cursor-pointer"
-        >
-          Continuar
-        </button>
+      <h1 class="mt-4 mb-4 text-center text-4xl font-semibold dark:text-white">Symtem Chat 🙊</h1>
+      <form id="usernameForm" class="flex flex-1 flex-col justify-center p-5">
+        <div class="relative flex flex-col gap-2">
+          <label class="mb-1 text-left text-sm font-semibold after:ml-0.5 after:text-red-500 after:content-['*'] dark:text-white" for="usernameInput">Nombre</label>
+          <input type="text" id="usernameInput" class="form-control" placeholder="Juan Perez" required />
+          <span id="messageError" class="hidden justify-center overflow-hidden rounded-lg bg-rose-500/25 px-3 py-2 text-sm text-rose-800 inset-ring inset-ring-rose-700/25 dark:text-rose-400">Error</span>
+
+          <div>
+            <div class="peer absolute -top-0 right-0">
+              <label class="flex items-center space-x-2">
+                <input id="admin" type="checkbox" class="peer accent-emerald-600" />
+                <span class="font-semibold dark:text-white">Admin</span>
+              </label>
+            </div>
+            <!-- cursor-not-allowed -->
+            <div class="fixed left-full peer-has-checked:relative peer-has-checked:left-auto">
+              <label for="tokenInput" class="mb-1 text-left text-sm font-semibold after:ml-0.5 after:text-red-500 after:content-['*'] dark:text-white">Token</label>
+              <input type="text" id="tokenInput" class="form-control" placeholder="Token" />
+            </div>
+          </div>
+
+          <button type="submit" class="w-full cursor-pointer rounded-lg bg-emerald-600 py-3 text-white dark:bg-emerald-500 dark:hover:bg-emerald-400">Continuar</button>
+        </div>
       </form>
     </div>
 
     <!-- Pantalla de grupos -->
     <div id="groupScreen" class="hidden">
       <div class="form-container flex h-full flex-col">
-        <div
-          class="sticky top-0 z-10 flex items-center bg-emerald-600 p-4 text-white"
-        >
-          <h3 class="text-lg font-medium">
-            Hola, <span id="currentUsername"></span>
-          </h3>
-          <button class="ml-auto cursor-pointer bg-gray-50/10 rounded-sm px-2" id="logoutButton">
-            Cerrar sesión
-          </button>
+        <div class="sticky top-0 z-10 flex items-center bg-emerald-600 p-4 text-white">
+          <h3 class="text-lg font-medium">Hola, <span id="currentUsername"></span></h3>
+          <button class="ml-auto cursor-pointer rounded-sm bg-gray-50/10 px-2" id="logoutButton">Cerrar sesión</button>
         </div>
-        <ul
-          id="groupList"
-          class="groups-list flex-1 space-y-2 overflow-y-auto p-2"
-        >
+        <ul id="groupList" class="groups-list flex-1 space-y-2 overflow-y-auto p-2">
           <li class="group-item" data-group-id="1" data-group-name="group">
             <div class="group-info">
               <h3 class="group-name">Grupo Familiar 👨👩👧👦</h3>
@@ -199,21 +170,11 @@
     <!-- Pantalla de chat -->
     <div id="chatScreen" class="hidden">
       <nav class="sticky top-0 flex items-center bg-emerald-600 p-4 text-white">
-        <button
-          id="backButton"
-          class="mr-4 cursor-pointer border-0 bg-transparent text-lg text-white"
-        >
-          ←
-        </button>
-        <h2 class="text-lg font-medium" id="groupNameTitle">
-          Cargando nombre del grupo...
-        </h2>
+        <button id="backButton" class="mr-4 cursor-pointer border-0 bg-transparent text-lg text-white">←</button>
+        <h2 class="text-lg font-medium" id="groupNameTitle">Cargando nombre del grupo...</h2>
       </nav>
 
-      <div
-        id="messagesContainer"
-        class="flex flex-1 flex-col overflow-y-auto bg-gray-200 p-2.5 dark:bg-gray-900"
-      >
+      <div id="messagesContainer" class="flex flex-1 flex-col overflow-y-auto bg-gray-200 p-2.5 dark:bg-gray-900">
         <div class="message message-sent">
           Mensaje 1 en Grupo 1 - Lorem ipsum dolor sit amet.
           <span class="message-status">10:00 AM ✓</span>
@@ -225,29 +186,11 @@
         </div>
       </div>
 
-      <div class="sticky bottom-0 flex bg-white p-2.5 dark:bg-gray-800">
-        <input
-          type="text"
-          class="mr-2.5 flex-1 rounded-3xl border border-gray-300 p-3 dark:border-gray-600 dark:bg-gray-700"
-          id="messageInput"
-          placeholder="Escribe un mensaje..."
-        />
-        <button
-          id="sendButton"
-          class="cursor-pointer rounded-2xl border-0 bg-emerald-600 px-4 py-2.5 text-white dark:bg-emerald-500 dark:hover:bg-emerald-400"
-        >
-          Enviar
-        </button>
+      <div class="sticky bottom-0 flex gap-2 bg-white p-2.5 dark:bg-gray-800">
+        <input type="text" class="form-control" id="messageInput" placeholder="Escribe un mensaje..." />
+        <button id="sendButton" class="cursor-pointer rounded-2xl border-0 bg-emerald-600 px-4 py-2.5 text-white dark:bg-emerald-500 dark:hover:bg-emerald-400">Enviar</button>
         <button id="scrollToBottom">
-          <svg
-            class="size-6 text-emerald-600"
-            fill="none"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
+          <svg class="size-6 text-emerald-600" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
             <path d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
           </svg>
         </button>
