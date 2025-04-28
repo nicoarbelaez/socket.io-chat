@@ -1,19 +1,19 @@
-import CookieManager from './auth.js';
+import { $ } from '../utils/dom.js';
+import CookieManager from '../utils/auth.js';
 
-const ScreenManager = {
+export const ScreenManager = {
   init(socket) {
     this.socket = socket;
     this.screens = {
-      username: document.getElementById('usernameScreen'),
-      group: document.getElementById('groupScreen'),
-      chat: document.getElementById('chatScreen'),
+      username: $('usernameScreen'),
+      group: $('groupScreen'),
+      chat: $('chatScreen'),
     };
-
     this.bindAuthEvents();
   },
 
   bindAuthEvents() {
-    document.getElementById('usernameForm').addEventListener('submit', (e) => {
+    $('usernameForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const username = document.getElementById('usernameInput').value.trim();
       if (username) {
@@ -21,38 +21,32 @@ const ScreenManager = {
       }
     });
 
-    document.getElementById('groupList').addEventListener('click', (e) => {
+    $('groupList').addEventListener('click', (e) => {
       const groupItem = e.target.closest('.group-item');
       if (groupItem) {
-        const groupId = groupItem.dataset.groupId;
         const groupNameElement = groupItem.querySelector('.group-name');
         const groupName = groupNameElement
           ? groupNameElement.textContent.trim()
           : 'Hubo un error';
 
-        this.handleGroupSelection(groupId, groupName);
+        this.handleGroupSelection(groupItem.dataset.groupId, groupName);
       }
     });
 
-    document.getElementById('backButton').addEventListener('click', () => {
+    $('backButton').addEventListener('click', () => {
       this.socket.emit('group_leave');
       this.showScreen('group');
     });
 
-    document.getElementById('logoutButton').addEventListener('click', () => {
+    $('logoutButton').addEventListener('click', () => {
       CookieManager.clearSession();
       this.showScreen('username');
       this.socket.emit('user_logout');
     });
-
-    this.socket.on('session_expired', () => {
-      this.showScreen('username');
-    });
   },
 
   updateUserInfo(username) {
-    document.getElementById('currentUsername').textContent =
-      `${decodeURIComponent(username)}`;
+    $('currentUsername').textContent = decodeURIComponent(username);
   },
 
   showScreen(screen) {
@@ -64,11 +58,28 @@ const ScreenManager = {
     this.screens[screen].classList.add('screen');
   },
 
+  updateGroupList(groups) {
+    $('groupList').innerHTML = groups
+      .map(
+        (g) => `
+      <li class="group-item" data-group-id="${g.id}" data-group-name="${g.name}">
+        <div class="group-info">
+          <h3 class="group-name">${g.name} ${g.icon || ''}</h3>
+          <p class="group-last-message">Último mensaje 1</p>
+        </div>
+        <span class="notification-badge">
+          <span class="notification-ping"></span>
+          <span class="notification-circle">4</span>
+        </span>
+      </li>
+    `
+      )
+      .join('');
+  },
+
   handleGroupSelection(roomId, groupName) {
-    document.getElementById('groupNameTitle').textContent = groupName;
+    $('groupNameTitle').textContent = groupName;
     this.socket.emit('group_join', roomId);
     this.showScreen('chat');
   },
 };
-
-export default ScreenManager;
