@@ -64,7 +64,6 @@ export class CircleView {
   initSocketHandlers() {
     this.socket.on('circle_move', (position) => this.setPosition(position));
     this.socket.on('circle_move_islock', (locked) => {
-      console.log('locked', locked);
       if (!locked) {
         this.circle.title = `Libre 🫠`;
       }
