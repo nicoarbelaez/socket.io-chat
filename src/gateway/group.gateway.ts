@@ -1,3 +1,4 @@
+import { NAMESPACE } from '../config/const';
 import { GroupService } from '../service/group.service';
 import { AppSocket, SocketServer } from '../types/socket.types';
 import { BaseGateway } from './base.gateway';
@@ -7,9 +8,10 @@ export class GroupGateway extends BaseGateway {
   constructor(
     server: SocketServer,
     gatewayManager: GatewayManager,
-    private readonly groupService: GroupService
+    private readonly groupService: GroupService,
+    namespace: NAMESPACE = NAMESPACE.DEFAULT
   ) {
-    super(server, gatewayManager);
+    super(server, gatewayManager, namespace);
   }
 
   protected registerHandlers(): void {

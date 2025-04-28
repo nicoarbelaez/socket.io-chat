@@ -1,3 +1,4 @@
+import { NAMESPACE } from '../config/const';
 import { User } from '../schemas/user.schema';
 import { UserService } from '../service/user.service';
 import { AppSocket, SocketServer } from '../types/socket.types';
@@ -8,9 +9,10 @@ export class UserGateway extends BaseGateway {
   constructor(
     server: SocketServer,
     gatewayManager: GatewayManager,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    namespace: NAMESPACE = NAMESPACE.DEFAULT
   ) {
-    super(server, gatewayManager);
+    super(server, gatewayManager, namespace);
   }
 
   protected registerHandlers(): void {

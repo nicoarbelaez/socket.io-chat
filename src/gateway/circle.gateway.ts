@@ -1,3 +1,4 @@
+import { NAMESPACE } from '../config/const';
 import { CircleService } from '../service/circle.service';
 import { SocketServer } from '../types/socket.types';
 import { BaseGateway } from './base.gateway';
@@ -9,9 +10,10 @@ export class CircleGateway extends BaseGateway {
   constructor(
     server: SocketServer,
     gatewayManager: GatewayManager,
-    private readonly circleService: CircleService
+    private readonly circleService: CircleService,
+    namespace: NAMESPACE = NAMESPACE.DEFAULT
   ) {
-    super(server, gatewayManager);
+    super(server, gatewayManager, namespace);
   }
 
   protected registerHandlers(): void {

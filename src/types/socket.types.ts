@@ -1,3 +1,4 @@
+import { Namespace, Server, Socket } from 'socket.io';
 import {
   ServerToClientEvents,
   ClientToServerEvents,
@@ -5,7 +6,7 @@ import {
   SocketData,
 } from './events.types';
 
-export type AppSocket = import('socket.io').Socket<
+export type AppSocket = Socket<
   ClientToServerEvents,
   ServerToClientEvents,
   InterServerEvents,
@@ -13,10 +14,24 @@ export type AppSocket = import('socket.io').Socket<
 >;
 
 export type SocketServer = {
-  io: import('socket.io').Server<
+  io: Server<
     ClientToServerEvents,
     ServerToClientEvents,
     InterServerEvents,
     SocketData
   >;
+  namespaces: {
+    admin: Namespace<
+      ClientToServerEvents,
+      ServerToClientEvents,
+      InterServerEvents,
+      SocketData
+    >;
+    default: Namespace<
+      ClientToServerEvents,
+      ServerToClientEvents,
+      InterServerEvents,
+      SocketData
+    >;
+  };
 };

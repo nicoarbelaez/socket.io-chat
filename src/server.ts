@@ -15,11 +15,16 @@ import { GroupGateway } from './gateway/group.gateway';
 import { CircleCache } from './cache/circle.cache';
 import { CircleService } from './service/circle.service';
 import { CircleGateway } from './gateway/circle.gateway';
+import { NAMESPACE } from './config/const';
 
 export function createApp() {
   const app = express();
   const httpServer = createServer(app);
   const io = new SocketIOServer(httpServer);
+
+  // Crear namespaces
+  const defaultNsp = io.of('/default');
+  const adminNsp = io.of('/admin');
 
   // Configurar cachés
   const userCache = new UserCache();
@@ -38,13 +43,21 @@ export function createApp() {
   const circleService = new CircleService(circleCache);
 
   // Configurar gateways
-  const socketServer: SocketServer = { io };
+  const socketServer: SocketServer = {
+    io,
+    namespaces: {
+      admin: adminNsp,
+      default: defaultNsp,
+    },
+  };
   const gatewayManager = new GatewayManager(socketServer);
 
-  new UserGateway(socketServer, gatewayManager, userService);
-  new MessageGateway(socketServer, gatewayManager, messageService);
-  new GroupGateway(socketServer, gatewayManager, groupService);
-  new CircleGateway(socketServer, gatewayManager, circleService);
+  [NAMESPACE.ADMIN, NAMESPACE.DEFAULT].forEach((namespace) => {
+    new UserGateway(socketServer, gatewayManager, userService, namespace);
+    new MessageGateway(socketServer, gatewayManager, messageService, namespace);
+    new GroupGateway(socketServer, gatewayManager, groupService, namespace);
+    new CircleGateway(socketServer, gatewayManager, circleService, namespace);
+  });
 
   return { app, httpServer };
 }
