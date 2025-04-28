@@ -134,9 +134,10 @@
               </label>
             </div>
             <!-- cursor-not-allowed -->
-            <div class="fixed left-full peer-has-checked:relative peer-has-checked:left-auto">
+            <div class="fixed flex flex-col gap-2 left-full peer-has-checked:relative peer-has-checked:left-auto">
               <label for="tokenInput" class="mb-1 text-left text-sm font-semibold after:ml-0.5 after:text-red-500 after:content-['*'] dark:text-white">Token</label>
               <input type="password" id="tokenInput" class="form-control" placeholder="Token" />
+              <span id="messageErrorToken" class="hidden justify-center overflow-hidden rounded-lg bg-rose-500/25 px-3 py-2 text-sm text-rose-800 inset-ring inset-ring-rose-700/25 dark:text-rose-400">Error</span>
             </div>
           </div>
 
