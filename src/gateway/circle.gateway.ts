@@ -39,7 +39,7 @@ export class CircleGateway extends BaseGateway {
         // Establecer nuevo timeout para desbloquear
         this.lockTimeout = setTimeout(() => {
           this.circleService.clearLock();
-          socket.broadcast.emit('circle_move_islock', false);
+          this.server.io.emit('circle_move_islock', false);
         }, 2000);
 
         const updatedPosition = this.circleService.updatePosition(
