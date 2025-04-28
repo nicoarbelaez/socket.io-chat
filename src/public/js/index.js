@@ -1,19 +1,18 @@
-import ScreenManager from './ui.js';
-import { initChat } from './chat.js';
-import CookieManager from './auth.js';
-import InitCircleDrag from './circle.js';
+import { ScreenManager } from './views/screen.view.js';
+import { ChatService } from './services/chat.service.js';
+import { ChatView } from './views/chat.view.js';
+import { CircleView } from './views/circle.view.js';
+import CookieManager from './utils/auth.js';
 
-// Inicialización principal
 document.addEventListener('DOMContentLoaded', () => {
   const socket = io({
-    auth: {
-      username: CookieManager.getUsername() || '',
-    },
+    auth: { username: CookieManager.getUsername() || '' },
     autoConnect: false,
   });
 
   ScreenManager.init(socket);
-  InitCircleDrag(socket);
-  initChat(socket);
+  const chatView = new ChatView(socket);
+  new ChatService(socket, chatView);
+  new CircleView(socket);
   socket.connect();
 });

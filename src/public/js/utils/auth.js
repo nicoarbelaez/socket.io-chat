@@ -1,7 +1,7 @@
 const CookieManager = {
   setUsername(username) {
     const date = new Date();
-    date.setTime(date.getTime() + 60 * 60 * 1000); // 1 hora
+    date.setTime(date.getTime() + 60 * 60 * 1000);
     document.cookie = `username=${encodeURIComponent(username)}; expires=${date.toUTCString()}; path=/`;
   },
 
