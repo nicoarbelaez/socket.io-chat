@@ -9,6 +9,15 @@ export class UserCache {
     this.socketMap.set(user.socketId, user.username);
   }
 
+  getById(userId: string): User | undefined {
+    for (const user of this.users.values()) {
+      if (user.id === userId) {
+        return user;
+      }
+    }
+    return undefined;
+  }
+
   getByUsername(username: string): User | undefined {
     return this.users.get(username);
   }

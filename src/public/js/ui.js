@@ -10,7 +10,6 @@ const ScreenManager = {
     };
 
     this.bindAuthEvents();
-    // this.checkExistingSession();
   },
 
   bindAuthEvents() {
@@ -50,16 +49,6 @@ const ScreenManager = {
       this.showScreen('username');
     });
   },
-
-  // checkExistingSession() {
-  //   const username = CookieManager.getUsername();
-  //   if (username) {
-  //     this.showScreen('group');
-  //     this.updateUserInfo(username);
-  //   } else {
-  //     this.showScreen('username');
-  //   }
-  // },
 
   updateUserInfo(username) {
     document.getElementById('currentUsername').textContent =

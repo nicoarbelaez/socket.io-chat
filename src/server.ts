@@ -12,6 +12,9 @@ import { MessageGateway } from './gateway/message.gateway';
 import { SocketServer } from './types/socket.types';
 import { GatewayManager } from './gateway/gateway.manager';
 import { GroupGateway } from './gateway/group.gateway';
+import { CircleCache } from './cache/circle.cache';
+import { CircleService } from './service/circle.service';
+import { CircleGateway } from './gateway/circle.gateway';
 
 export function createApp() {
   const app = express();
@@ -22,19 +25,26 @@ export function createApp() {
   const userCache = new UserCache();
   const messageCache = new MessageCache();
   const groupCache = new GroupCache();
+  const circleCache = new CircleCache();
 
   // Inicializar servicios
   const userService = new UserService(userCache);
   const messageService = new MessageService(messageCache);
-  const groupService = new GroupService(groupCache, messageCache);
+  const groupService = new GroupService(
+    groupCache,
+    messageService,
+    userService
+  );
+  const circleService = new CircleService(circleCache);
 
   // Configurar gateways
   const socketServer: SocketServer = { io };
   const gatewayManager = new GatewayManager(socketServer);
 
   new UserGateway(socketServer, gatewayManager, userService);
-  new MessageGateway(socketServer, gatewayManager, messageService, userService);
+  new MessageGateway(socketServer, gatewayManager, messageService);
   new GroupGateway(socketServer, gatewayManager, groupService);
+  new CircleGateway(socketServer, gatewayManager, circleService);
 
   return { app, httpServer };
 }

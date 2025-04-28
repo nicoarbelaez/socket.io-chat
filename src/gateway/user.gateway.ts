@@ -1,3 +1,4 @@
+import { User } from '../schemas/user.schema';
 import { UserService } from '../service/user.service';
 import { AppSocket, SocketServer } from '../types/socket.types';
 import { BaseGateway } from './base.gateway';
@@ -14,7 +15,7 @@ export class UserGateway extends BaseGateway {
 
   protected registerHandlers(): void {
     this.onConnection((socket) => {
-      const username = socket.handshake.auth.username;
+      const username = socket.handshake.auth.username as string;
 
       if (!username) {
         socket.emit('session_expired');
@@ -36,9 +37,36 @@ export class UserGateway extends BaseGateway {
 
   private authenticateUser(username: string, socket: AppSocket): void {
     const isOnline = this.userService.isUserOnline(username);
-    const user = !isOnline
-      ? this.userService.register(username, socket.id)
-      : null;
+    let user: User | null = null;
+
+    if (!isOnline) {
+      const userExists = this.userService.getUserByUsername(username);
+
+      if (userExists) {
+        this.userService.setUserSocketId(username, socket.id);
+        user = userExists;
+      } else {
+        user = this.userService.register(username, socket.id);
+      }
+    }
+
+    if (user) {
+      socket.data.user = user;
+    } else {
+      socket.data.user = null;
+    }
+
+    console.log(
+      '========',
+      username,
+      {
+        socket: socket.id,
+        isOnline,
+        user,
+        users: this.userService.getAllUsers(),
+      },
+      '========'
+    );
 
     socket.emit('user_availability', {
       available: !isOnline,
@@ -54,6 +82,9 @@ export class UserGateway extends BaseGateway {
     if (!user) return;
 
     this.userService.setUserOnlineStatus(user.username, false);
+
+    socket.data.user = null;
+    socket.data.room = null;
 
     console.log(
       `[${source} -] Client disconnected ${socket.id} (${this.server.io.engine.clientsCount})`

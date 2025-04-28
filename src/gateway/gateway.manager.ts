@@ -1,5 +1,4 @@
 import { AppSocket, SocketServer } from '../types/socket.types';
-import { BaseGateway } from './base.gateway';
 
 export type ConnectionHandler = (socket: AppSocket) => void;
 

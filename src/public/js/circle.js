@@ -5,44 +5,79 @@ const InitCircleDrag = (socket) => {
     return;
   }
 
-  // Función que mueve el círculo y emite la posición
-  const drag = (e) => {
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  // Estado local para el bloqueo
+  let isLocked = false;
 
-    // Obtener dimensiones del círculo
+  socket.emit('circle_get_position');
+
+  const normalizeCoordinates = (clientX, clientY) => {
     const circleWidth = $circle.offsetWidth / 2;
     const circleHeight = $circle.offsetHeight / 2;
 
-    // Calcular límites
     const maxX = window.innerWidth - circleWidth * 1.2;
     const maxY = window.innerHeight - circleHeight * 1.2;
 
-    // Aplicar límites
-    const clampedX = Math.max(circleWidth, Math.min(clientX, maxX));
-    const clampedY = Math.max(circleHeight, Math.min(clientY, maxY));
-
-    const position = {
-      top: clampedY + 'px',
-      left: clampedX + 'px',
+    return {
+      top: Math.max(circleHeight, Math.min(clientY, maxY)),
+      left: Math.max(circleWidth, Math.min(clientX, maxX)),
     };
-
-    setPosition(position);
-    socket.emit('circle_position', position);
   };
 
-  const setPosition = ({ top, left }) => {
-    $circle.style.top = top;
-    $circle.style.left = left;
+  const setPosition = ({ top, left, username, color }) => {
+    const position = normalizeCoordinates(top, left);
+
+    $circle.style.top =
+      typeof position.top === 'number' ? `${position.top}px` : position.top;
+    $circle.style.left =
+      typeof position.left === 'number' ? `${position.left}px` : position.left;
+
+    if (username) {
+      $circle.setAttribute('title', `Movido por: ${username}`);
+    }
+
+    if (color) {
+      $circle.style.backgroundColor = color;
+    }
+
+    // Actualizar cursor según el estado de bloqueo
+    $circle.style.cursor = isLocked ? 'not-allowed' : 'grab';
+  };
+
+  // Función que maneja el arrastre
+  const drag = (e) => {
+    // No permitir el movimiento si está bloqueado
+    if (isLocked) {
+      return;
+    }
+
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+    // Obtener coordenadas normalizadas
+    const position = {
+      top: clientX,
+      left: clientY,
+    };
+
+    // Emitir solo las coordenadas normalizadas
+    socket.emit('circle_position', position);
+
+    // Aplicar posición localmente (sin username/color para movimiento propio)
+    setPosition(position);
   };
 
   // --- MOUSE EVENTS ---
   const onMouseDown = (e) => {
+    if (isLocked) {
+      return; // No iniciar el arrastre si está bloqueado
+    }
     e.preventDefault();
+    $circle.style.cursor = 'grabbing';
     document.addEventListener('mousemove', drag);
   };
   const onMouseUp = () => {
     document.removeEventListener('mousemove', drag);
+    $circle.style.cursor = isLocked ? 'not-allowed' : 'grab';
   };
 
   $circle.addEventListener('mousedown', onMouseDown);
@@ -50,6 +85,9 @@ const InitCircleDrag = (socket) => {
 
   // --- TOUCH EVENTS ---
   const onTouchStart = (e) => {
+    if (isLocked) {
+      return; // No iniciar el arrastre si está bloqueado
+    }
     e.preventDefault();
     document.addEventListener('touchmove', drag, { passive: false });
   };
@@ -65,9 +103,21 @@ const InitCircleDrag = (socket) => {
     setPosition(position);
   });
 
-  // Opcional: devolver API para tests o manipulación externa
+  socket.on('circle_move_islock', (locked) => {
+    isLocked = locked;
+    $circle.style.cursor = locked ? 'not-allowed' : 'grab';
+
+    // Si se bloquea mientras se está moviendo, detener el movimiento
+    if (locked) {
+      document.removeEventListener('mousemove', drag);
+      document.removeEventListener('touchmove', drag);
+    }
+  });
+
+  // API para tests o manipulación externa
   return {
     setPosition,
+    normalizeCoordinates,
     destroy: () => {
       $circle.removeEventListener('mousedown', onMouseDown);
       document.removeEventListener('mouseup', onMouseUp);
@@ -76,6 +126,7 @@ const InitCircleDrag = (socket) => {
       document.removeEventListener('mousemove', drag);
       document.removeEventListener('touchmove', drag);
       socket.off('circle_move');
+      socket.off('circle_move_islock');
     },
   };
 };

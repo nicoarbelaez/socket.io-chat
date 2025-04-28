@@ -14,21 +14,21 @@ export class GroupGateway extends BaseGateway {
 
   protected registerHandlers(): void {
     this.onConnection((socket) => {
-      socket.on('group_get', () => this.sendGroups(socket));
-      socket.on('group_join', (roomId) => this.joinGroups(socket, roomId));
-      socket.on('group_leave', () => this.leaveGroups(socket));
+      socket.on('group_get', () => this.sendGroup(socket));
+      socket.on('group_join', (roomId) => this.joinGroup(socket, roomId));
+      socket.on('group_leave', () => this.leaveGroup(socket));
     });
   }
 
-  private sendGroups(socket: AppSocket): void {
+  private sendGroup(socket: AppSocket): void {
     const groups = this.groupService.getNamespaceGroups('default');
     socket.emit('group_updated', groups);
   }
 
-  private joinGroups(socket: AppSocket, roomId: string): void {
-    this.leaveGroups(socket);
+  private joinGroup(socket: AppSocket, roomId: string): void {
+    this.leaveGroup(socket);
 
-    socket.data.connectedRoom = roomId;
+    socket.data.room = roomId;
     socket.join(roomId);
     socket.emit(
       'group_conversation',
@@ -36,11 +36,11 @@ export class GroupGateway extends BaseGateway {
     );
   }
 
-  private leaveGroups(socket: AppSocket): void {
-    const roomOld = socket.data.connectedRoom;
+  private leaveGroup(socket: AppSocket): void {
+    const roomOld = socket.data.room;
     if (roomOld) {
       socket.leave(roomOld);
-      socket.data.connectedRoom = undefined;
+      socket.data.room = null;
     }
   }
 }

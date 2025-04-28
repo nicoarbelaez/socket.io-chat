@@ -30,11 +30,22 @@ export class UserService {
     this.cache.update(username, { online });
   }
 
+  setUserSocketId(username: string, socketId: string): void {
+    const user = this.cache.getByUsername(username);
+    if (user) {
+      this.cache.update(username, { socketId, online: true });
+    }
+  }
+
   getAllUsers(): User[] {
     return this.cache.getAll();
   }
 
-  getUser(username: string): User | null {
+  getUserById(userId: string): User | null {
+    return this.cache.getById(userId) || null;
+  }
+
+  getUserByUsername(username: string): User | null {
     return this.cache.getByUsername(username) || null;
   }
 

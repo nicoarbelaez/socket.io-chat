@@ -10,7 +10,16 @@ export const messageSchema = z.object({
   seenBy: z.array(z.string()),
 });
 
-export const messageDtoSchema = messageSchema;
+export const messageDtoSchema = messageSchema
+  .omit({
+    userId: true,
+  })
+  .extend({
+    user: z.object({
+      id: z.string(),
+      username: z.string(),
+    }),
+  });
 
 export type Message = z.infer<typeof messageSchema>;
 export type MessageDto = z.infer<typeof messageDtoSchema>;

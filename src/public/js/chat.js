@@ -31,11 +31,11 @@ export const initChat = (socket) => {
   };
 
   const handleMessageSend = () => {
-    const message = messageInput.value.trim();
-    if (message) {
+    const content = messageInput.value.trim();
+    if (content) {
       const timestamp = Date.now();
-      socket.emit('message_send', message, timestamp);
-      addMessage({ text: message, timestamp, isSent: true });
+      socket.emit('message_send', content);
+      addMessage({ text: content, timestamp, isSent: true });
       messageInput.value = '';
     }
   };
@@ -100,15 +100,22 @@ export const initChat = (socket) => {
       scrollToBottom();
     });
 
-    socket.on('new_message', ({ content, username, timestamp }) => {
-      if (CookieManager.getUsername() !== username) {
-        addMessage({ text: content, name: username, timestamp, isSent: false });
+    socket.on(
+      'message_new',
+      ({ id, content, user: { username }, timestamp }) => {
+        addMessage({
+          id,
+          text: content,
+          name: username,
+          timestamp,
+          isSent: false,
+        });
       }
-    });
+    );
 
     socket.on('group_conversation', (messages) => {
       messagesContainer.innerHTML = '';
-      messages.forEach(({ id, userId, username, content, timestamp }) =>
+      messages.forEach(({ id, content, user: { username }, timestamp }) =>
         addMessage({
           id,
           text: content,

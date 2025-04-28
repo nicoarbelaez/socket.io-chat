@@ -1,5 +1,6 @@
 import { MessageCache } from '../cache/message.cache';
-import { Message } from '../schemas/message.schema';
+import { Message, MessageDto } from '../schemas/message.schema';
+import { User } from '../schemas/user.schema';
 import { generateId } from '../utils/utils';
 
 export class MessageService {
@@ -61,5 +62,15 @@ export class MessageService {
 
   getMessageCount(roomId?: string): number {
     return this.cache.getMessageCount(roomId);
+  }
+
+  convertMessageToDto(message: Message, user: User): MessageDto {
+    return {
+      ...message,
+      user: {
+        id: user.id,
+        username: user.username,
+      },
+    };
   }
 }
