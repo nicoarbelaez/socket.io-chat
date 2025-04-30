@@ -8,6 +8,10 @@ const CookieManager = {
     });
   },
 
+  async getAll() {
+    return await cookieStore.getAll();
+  },
+
   async get(name) {
     return await cookieStore.get(name);
   },
