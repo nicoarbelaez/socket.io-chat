@@ -15,6 +15,11 @@ const CookieManager = {
   async clear(name) {
     await cookieStore.delete(name);
   },
+
+  async clearAll() {
+    const cookies = await cookieStore.getAll();
+    await Promise.all(cookies.map((cookie) => cookieStore.delete(cookie.name)));
+  },
 };
 
 export default CookieManager;
