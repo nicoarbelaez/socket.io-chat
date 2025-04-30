@@ -1,20 +1,19 @@
 const CookieManager = {
-  setUsername(username) {
-    const date = new Date();
-    date.setTime(date.getTime() + 60 * 60 * 1000);
-    document.cookie = `username=${encodeURIComponent(username)}; expires=${date.toUTCString()}; path=/`;
+  async setUsername(username) {
+    const day = Date.now() + 24 * 60 * 60 * 1000;
+    await cookieStore.set({
+      name: 'username',
+      value: username,
+      expires: day,
+    });
   },
 
-  getUsername() {
-    return document.cookie
-      .split('; ')
-      .find((row) => row.startsWith('username='))
-      ?.split('=')[1];
+  async getUsername() {
+    return await cookieStore.get('username');
   },
 
-  clearSession() {
-    document.cookie =
-      'username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+  async clearSession() {
+    await cookieStore.delete('username');
   },
 };
 
