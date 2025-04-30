@@ -1,19 +1,19 @@
 const CookieManager = {
-  async setUsername(username) {
+  async set(name, value) {
     const day = Date.now() + 24 * 60 * 60 * 1000;
     await cookieStore.set({
-      name: 'username',
-      value: username,
+      name,
+      value,
       expires: day,
     });
   },
 
-  async getUsername() {
-    return await cookieStore.get('username');
+  async get(name) {
+    return await cookieStore.get(name);
   },
 
-  async clearSession() {
-    await cookieStore.delete('username');
+  async clear(name) {
+    await cookieStore.delete(name);
   },
 };
 

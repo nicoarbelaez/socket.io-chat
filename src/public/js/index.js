@@ -22,7 +22,7 @@ class SocketManager {
   createSocket(namespace, options = {}) {
     return io(namespace, {
       auth: {
-        username: CookieManager.getUsername() || '',
+        username: CookieManager.get('username') || '',
         ...options,
       },
       autoConnect: false,

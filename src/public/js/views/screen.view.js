@@ -60,7 +60,7 @@ export const ScreenManager = {
     });
 
     $('logoutButton').addEventListener('click', async () => {
-      CookieManager.clearSession();
+      CookieManager.clear('username');
       this.showScreen('username');
       this.socket.emit('user_logout');
       await this.socketManager.switchConnection(null);

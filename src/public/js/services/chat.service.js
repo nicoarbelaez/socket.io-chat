@@ -28,7 +28,7 @@ export class ChatService {
           text: content,
           name: username,
           timestamp,
-          isSent: CookieManager.getUsername() === username,
+          isSent: CookieManager.get('username') === username,
         })
       );
       this.chatView.scrollToBottom(true);
@@ -37,14 +37,14 @@ export class ChatService {
     this.socket.on('user_availability', ({ available, user }) => {
       const messageError = $('messageError');
       if (available) {
-        CookieManager.setUsername(user.username);
+        CookieManager.set('username', user.username);
         ScreenManager.showScreen('group');
         ScreenManager.updateUserInfo(user.username);
         messageError.textContent = '';
         messageError.classList.add('hidden');
         this.socket.emit('group_get');
       } else {
-        CookieManager.clearSession();
+        CookieManager.clear('username');
         ScreenManager.showScreen('username');
         messageError.textContent = 'El usuario ya está en uso.';
         messageError.classList.remove('hidden');
