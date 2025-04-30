@@ -2,8 +2,9 @@ import { $ } from '../utils/dom.js';
 import CookieManager from '../utils/auth.js';
 
 export const ScreenManager = {
-  init(socket) {
-    this.socket = socket;
+  init(socketManager) {
+    this.socketManager = socketManager;
+    this.socket = null;
     this.screens = {
       username: $('usernameScreen'),
       group: $('groupScreen'),
@@ -13,12 +14,32 @@ export const ScreenManager = {
   },
 
   bindAuthEvents() {
-    $('usernameForm').addEventListener('submit', (e) => {
+    $('usernameForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const username = document.getElementById('usernameInput').value.trim();
-      if (username) {
-        this.socket.emit('user_register', username);
+      const username = $('usernameInput').value.trim();
+      const isAdmin = $('admin').checked;
+      const token = $('tokenInput').value;
+      const messageErrorToken = $('messageErrorToken');
+
+      if (!username) return;
+
+      messageError.classList.add('hidden');
+      if (isAdmin && !token) {
+        messageErrorToken.textContent = 'El token es requerido.';
+        messageErrorToken.classList.remove('hidden');
+        return;
       }
+
+      if (isAdmin && token) {
+        // Conexión admin
+        await this.socketManager.connectAsAdmin(token);
+      } else {
+        // Conexión default
+        await this.socketManager.connectAsDefault();
+      }
+
+      this.socket = this.socketManager.getCurrentSocket();
+      this.socket.emit('user_register', username);
     });
 
     $('groupList').addEventListener('click', (e) => {
@@ -38,10 +59,11 @@ export const ScreenManager = {
       this.showScreen('group');
     });
 
-    $('logoutButton').addEventListener('click', () => {
+    $('logoutButton').addEventListener('click', async () => {
       CookieManager.clearSession();
       this.showScreen('username');
       this.socket.emit('user_logout');
+      await this.socketManager.switchConnection(null);
     });
   },
 
